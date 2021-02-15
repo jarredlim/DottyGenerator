@@ -1,0 +1,1 @@
+from dottygen.generator.dotty_generator import DottyGenerator

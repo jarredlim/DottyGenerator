@@ -1,0 +1,50 @@
+module Game;
+
+global protocol Game(role A, role B, role C, role S)
+{
+
+  start(string) from S to A;
+  answer(string) from A to S;
+  choice at S
+  {
+    success() from S to A;
+    start(string) from S to B;
+    answer(string) from B to S;
+
+    choice at S {
+     success() from S to B;
+     start(string) from S to C;
+    answer(string) from C to S;
+
+    choice at S{
+      success() from S to C;
+      win() from S to A;
+      win() from S to B;
+      win() from S to C;
+    }
+    or
+    {
+     fail() from S to C;
+     lose() from S to A;
+    lose() from S to B;
+    lose() from S to C;
+    }
+
+    }
+    or
+    {
+     fail() from S to B;
+     lose() from S to A;
+    lose() from S to B;
+    lose() from S to C;
+    }
+
+  }
+  or
+   {
+    fail() from S to A;
+    lose() from S to A;
+    lose() from S to B;
+    lose() from S to C;
+   }
+}

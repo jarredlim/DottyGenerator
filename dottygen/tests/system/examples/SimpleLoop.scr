@@ -1,0 +1,7 @@
+module SimpleLoop;
+
+global protocol SimpleLoop(role Client, role Svr) {
+
+        do SimpleLoop(Client, Svr);
+
+}

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="inc_compile_3.0.0-M11">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/examples/target/streams/compile/compileIncSetup/_global/streams/inc_compile_3.0.0-M1.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

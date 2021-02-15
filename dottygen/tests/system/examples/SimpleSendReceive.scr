@@ -1,0 +1,7 @@
+module SimpleSendReceive;
+
+global protocol SimpleSendReceive(role Client, role Svr) {
+
+    hello(number, string) from Client to Svr;
+    bye(number, string) from Svr to Client;
+}

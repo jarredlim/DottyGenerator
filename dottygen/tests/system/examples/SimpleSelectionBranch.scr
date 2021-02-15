@@ -1,0 +1,9 @@
+module SimpleSelectionBranch;
+
+global protocol SimpleSelectionBranch(role Client, role Svr) {
+    choice at Client {
+        GET(number) from Client to Svr;
+    } or {
+        POST(number, string) from Client to Svr;
+    }
+}
