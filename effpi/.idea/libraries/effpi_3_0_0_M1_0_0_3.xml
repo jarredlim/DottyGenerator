@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="effpi_3.0.0-M1-0.0.3">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/target/scala-3.0.0-M1/effpi_3.0.0-M1-0.0.3.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
