@@ -6,8 +6,8 @@ from dottygen.automata import parser as automata_parser
 from dottygen.utils import scribble, logger, role_parser, type_declaration_parser
 from dottygen.generator import DottyGenerator
 from dottygen.generator.file_writer import RecurseTypeGenerator
-from dottygen.generator.choices import Output, FunctionLambda, TypeMatch, Function, Termination, Goto, Loop
-from dottygen.generator.channels import InChannel, OutChannel, TypeMatchChannel
+from dottygen.generator.choices import Selection, FunctionLambda, TypeMatch, Function, Termination, Goto, Loop
+from dottygen.generator.channels import InChannel, OutChannel
 from dottygen.generator.types import Label
 
 def get_test_class(filename, protocol):
@@ -50,18 +50,14 @@ def get_test_class(filename, protocol):
     class MapTest(CodeGenerationTest):
 
         def _check_send(self, state, body, role):
-             self.assertIsInstance(body, Output)
-             output_channels = body.get_output_channels()
-             self.assertEqual(len(output_channels), 1)
-             output_channel = output_channels[0]
-             self.assertIsInstance(output_channel, OutChannel)
-             self.assertEqual(output_channel.get_sender(), role)
+             self.assertIsInstance(body, OutChannel)
+             self.assertEqual(body.get_sender(), role)
              actions = list(state.actions)
-             self.assertEqual(output_channel.get_receiver(), actions[0].role)
-             labels = output_channel.get_labels()
+             self.assertEqual(body.get_receiver(), actions[0].role)
+             labels = body.get_labels()
              self._check_labels_send_receive(labels,actions)
-             self.assertEqual(len(output_channel.get_continuation()), 1)
-             return [(actions[0].succ, output_channel.get_continuation()[0])]
+             self.assertEqual(len(body.get_continuation()), 1)
+             return [(actions[0].succ, body.get_continuation()[0])]
 
         def _check_labels_send_receive(self, labels, actions):
             self.assertEqual(len(labels), 1)
@@ -82,7 +78,7 @@ def get_test_class(filename, protocol):
             return [(actions[0].succ, body.get_continuation()[0])]
 
         def _check_selection(self, state, body, role):
-            self.assertIsInstance(body, Output)
+            self.assertIsInstance(body, Selection)
             output_channels = body.get_output_channels()
             actions = list(state.actions)
             self.assertEqual(len(output_channels), len(actions))

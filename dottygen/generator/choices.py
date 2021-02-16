@@ -1,7 +1,7 @@
 from dottygen.generator.types import Type
 from dottygen.generator.utils import first_char_lower
 
-class Output(Type):
+class Selection(Type):
 
     def __init__(self, channel_name):
         self._output_channels = []
@@ -19,13 +19,7 @@ class Output(Type):
     def get_output_channels(self):
         return self._output_channels
 
-    @property
-    def is_selection(self):
-        return len(self._output_channels) > 1
-
     def get_type(self) -> str:
-        if not self.is_selection:
-            return f"{self._output_channels[0].get_type()}"
         output = ""
         for i in range(len(self._output_channels)):
             output += f"({self._output_channels[i].get_type()})"
@@ -34,9 +28,6 @@ class Output(Type):
         return output
 
     def get_function_body(self, indentation, function_writer):
-        if not self.is_selection:
-            self._output_channels[0].get_function_body(indentation, function_writer)
-            return
         function_writer.write_line("val r = scala.util.Random", indentation)
         function_writer.write_line(f'val decision = r.nextInt({len(self._output_channels)})', indentation)
         function_writer.add_print(f'Making selection through channel {first_char_lower(self._channel_name)}', indentation)

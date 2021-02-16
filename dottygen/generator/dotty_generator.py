@@ -1,6 +1,6 @@
 import typing
 from dottygen.generator.file_writer import FunctionWriter
-from dottygen.generator.choices import Output, FunctionLambda, TypeMatch, Function, Termination, Goto, Loop
+from dottygen.generator.choices import Selection, FunctionLambda, TypeMatch, Function, Termination, Goto, Loop
 from dottygen.generator.types import Label
 from dottygen.generator.channels import InChannel, OutChannel, TypeMatchChannel
 
@@ -42,13 +42,20 @@ class DottyGenerator:
         channel_name = self._get_channel_name(actions[0].role, self._role)
 
         if efsm.is_send_state(state):
-            type = Output(channel_name)
-            for action in actions:
-                continuation, channels = self._build_helper(action.succ, visited)
+            if(len(actions) == 1):
+                continuation, channels = self._build_helper(actions[0].succ, visited)
                 channel_list += channels
-                out_channel = OutChannel(channel_name, [self._get_label(action)], continuation=continuation, sender=self._role, receiver=
+                type = OutChannel(channel_name, [self._get_label(actions[0])], continuation=continuation,
+                                         sender=self._role, receiver=
                                          actions[0].role)
-                type.add_continuation(out_channel)
+            else:
+                type = Selection(channel_name)
+                for action in actions:
+                    continuation, channels = self._build_helper(action.succ, visited)
+                    channel_list += channels
+                    out_channel = OutChannel(channel_name, [self._get_label(action)], continuation=continuation, sender=self._role, receiver=
+                                             actions[0].role)
+                    type.add_continuation(out_channel)
             channel_list.insert(0, type)
 
         elif efsm.is_receive_state(state):
