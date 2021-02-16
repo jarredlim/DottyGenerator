@@ -137,6 +137,4 @@ dmypy.json
 # Dependency directories
 node_modules/
 
-.eslintcache
-
-effpi-sandbox/*	
+.eslintcache	
