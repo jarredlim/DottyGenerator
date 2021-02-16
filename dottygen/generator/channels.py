@@ -50,8 +50,11 @@ class OutChannel(Channel):
     def get_channel_type(self):
         return f"OutChannel[{self.get_labels_name()}]"
 
-    def get_function_body(self, role) -> str:
-        return f'print("{role}:Sending {self.get_labels_name()} through channel {first_char_lower(self.get_channel_name())}\\n") \n send({first_char_lower(self.get_channel_name())},{self.labels[0].get_random_payload_value()}) >> {{\n {self.continuation.get_function_body(role)} }}'
+    def get_function_body(self, indentation, function_writer):
+        function_writer.add_print(f'Sending {self.get_labels_name()} through channel {first_char_lower(self.get_channel_name())}', indentation)
+        function_writer.write_line(f'send({first_char_lower(self.get_channel_name())},{self.labels[0].get_random_payload_value()}) >> {{', indentation)
+        self.continuation.get_function_body(indentation + 1, function_writer)
+        function_writer.write_line(f'}}', indentation)
 
 
 class TypeMatchChannel(Channel):
@@ -59,8 +62,8 @@ class TypeMatchChannel(Channel):
     def get_type(self) -> str:
         return self.get_channel_name()
 
-    def get_function_body(self, role) -> str:
-        return first_char_lower(self.get_channel_name())
+    def get_function_body(self,indentation, function_writer):
+        function_writer.writeline(first_char_lower(self.get_channel_name()), indentation)
 
     def get_channel_type(self):
         return f"{self.get_labels_name()}"
@@ -81,8 +84,12 @@ class InChannel(Channel):
     def get_channel_type(self):
         return f"InChannel[{self.get_labels_name()}]"
 
-    def get_function_body(self, role) -> str:
-        return f'receive({first_char_lower(self._channel_name)}) {{ \n ({first_char_lower(self.param)}:{self.get_labels_name()}) => \n print("{role}: Receive type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}\\n") \n {self.continuation.get_function_body(role)} \n}}'
+    def get_function_body(self, indentation, function_writer):
+        function_writer.write_line(f'receive({first_char_lower(self._channel_name)}) {{', indentation)
+        function_writer.write_line(f'({first_char_lower(self.param)}:{self.get_labels_name()}) =>', indentation+1)
+        function_writer.add_print(f'Receive type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}', indentation+1)
+        self.continuation.get_function_body(indentation + 1, function_writer)
+        function_writer.write_line(f'}}', indentation)
 
 
 

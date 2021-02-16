@@ -37,3 +37,26 @@ class RecurseTypeGenerator:
         new_recursion = f'sealed abstract class Rec{role}{state_id}[A]() extends RecVar[A]("{role}{state_id}")\ncase object Rec{role}{state_id} extends Rec{role}{state_id}[Unit]\n\n'
         self._file_writer.append_to_file(self._recurse_output, new_recursion)
 
+
+class FunctionWriter:
+
+    def __init__(self, role):
+        self._output = ""
+        self._role = role
+
+    def write_line(self, line, indentation, newline=True):
+        for i in range(indentation):
+            line = "   " + line
+        if newline:
+         line += "\n"
+        self._output += line
+
+    def add_print(self, line, indentation):
+        self.write_line(f'print("{self._role}:{line}\\n")', indentation)
+
+    def add_empty_line(self, lines):
+        for i in range(lines):
+            self._output += "\n"
+
+    def get_output(self):
+        return self._output

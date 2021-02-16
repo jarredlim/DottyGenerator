@@ -1,5 +1,5 @@
 import typing
-from dottygen.generator.file_writer import RecurseTypeGenerator
+from dottygen.generator.file_writer import FunctionWriter
 from dottygen.generator.choices import Output, FunctionLambda, TypeMatch, Function, Termination, Goto, Loop
 from dottygen.generator.types import Label
 from dottygen.generator.channels import InChannel, OutChannel, TypeMatchChannel
@@ -112,12 +112,12 @@ class DottyGenerator:
             type  += function.get_type()
         return type
 
-    def generate_functions(self, role):
-
-        output = ""
+    def generate_functions(self):
+        function_writer = FunctionWriter(self._role)
         for function in self._function_list:
-            output += function.get_function_body(role)
-        return output
+            function.get_function_body(1, function_writer)
+            function_writer.add_empty_line(2)
+        return function_writer.get_output()
 
     def _build_body(self):
         efsm = self._efsm
@@ -132,7 +132,7 @@ class DottyGenerator:
     def build(self, type_output_file):
         self._build_body()
         type = self.generate_type()
-        function = self.generate_functions(self._role)
+        function = self.generate_functions()
         return type, function, self._labels
 
 

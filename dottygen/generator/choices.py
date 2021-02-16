@@ -33,20 +33,22 @@ class Output(Type):
                 output += "|"
         return output
 
-    def get_function_body(self, role) -> str:
+    def get_function_body(self, indentation, function_writer):
         if not self.is_selection:
-            return f"{self._output_channels[0].get_function_body(role)}"
-        output = f"val r = scala.util.Random\n val decision = r.nextInt({len(self._output_channels)})\n" \
-                 f'print("{role}:Making selection through channel {first_char_lower(self._channel_name)}\\n")\n'
+            self._output_channels[0].get_function_body(indentation, function_writer)
+            return
+        function_writer.write_line("val r = scala.util.Random", indentation)
+        function_writer.write_line(f'val decision = r.nextInt({len(self._output_channels)})', indentation)
+        function_writer.add_print(f'Making selection through channel {first_char_lower(self._channel_name)}', indentation)
         for i in range(len(self._output_channels)):
             if i == 0:
-                output += f"if(decision == 0){{\n"
+                function_writer.write_line(f"if(decision == 0){{", indentation)
             elif i == len(self._output_channels) - 1:
-                output += f"else{{\n"
+                function_writer.write_line(f"else{{", indentation)
             else:
-                output += f"else if(decision == {i}){{\n"
-            output += f"{self._output_channels[i].get_function_body(role)} \n }}\n"
-        return output
+                function_writer.write_line(f"else if(decision == {i}){{\n", indentation)
+            self._output_channels[i].get_function_body(indentation + 1, function_writer)
+            function_writer.write_line(f"}}", indentation)
 
 
     def get_labels_name(self):
@@ -68,8 +70,9 @@ class Termination(Type):
      def get_continuation(self):
          return []
 
-     def get_function_body(self, role) -> str:
-         return f'print("{role}: Terminating....\\n") \n nil'
+     def get_function_body(self, indentation, function_writer):
+         function_writer.add_print("Terminating...", indentation)
+         function_writer.write_line('nil', indentation)
 
 class Goto(Type):
 
@@ -86,9 +89,9 @@ class Goto(Type):
     def get_type(self) -> str:
         return f"Loop[Rec{self._role}{self._state_id}]"
 
-    def get_function_body(self, role) -> str:
-        return f'print("{role}: go to loop Rec{self._role}{self._state_id}\\n")' \
-               f'\n loop(Rec{self._role}{self._state_id})'
+    def get_function_body(self, indentation, file_writer):
+        file_writer.add_print(f'print("go to loop Rec{self._role}{self._state_id}', indentation)
+        file_writer.write_line(f'loop(Rec{self._role}{self._state_id})', indentation)
 
 class Loop(Type):
     def __init__(self, state_id, role, body):
@@ -105,9 +108,13 @@ class Loop(Type):
     def get_type(self) -> str:
         return f"Rec[Rec{self._role}{self._state_id}, {self._body.get_type()}]"
 
-    def get_function_body(self,role) -> str:
-        return f'rec(Rec{self._role}{self._state_id}){{\n print("{role}: entering loop Rec{self._role}{self._state_id}\\n") ' \
-               f"\n {self._body.get_function_body(role)}\n}}"
+    def get_function_body(self, indentation, file_writer):
+        file_writer.write_line(f'rec(Rec{self._role}{self._state_id}){{', indentation)
+        file_writer.add_print(f'print("entering loop Rec{self._role}{self._state_id}")', indentation + 1)
+        self._body.get_function_body(indentation + 1, file_writer)
+        file_writer.write_line(f'}}', indentation)
+        # return f'rec(Rec{self._role}{self._state_id}){{\n print("{role}: entering loop Rec{self._role}{self._state_id}\\n") ' \
+        #        f"\n {self._body.get_function_body(role)}\n}}"
 
 class FunctionLambda(Type):
 
@@ -134,8 +141,8 @@ class FunctionLambda(Type):
     def get_type(self) -> str:
         return f"{self._function_name}[{self.param}.type{self._get_channel_names()}]"
 
-    def get_function_body(self, role) -> str:
-        return f"{first_char_lower(self._function_name)}({first_char_lower(self.param)}{self._get_channel_names(True)})"
+    def get_function_body(self, indentation, file_writer):
+        file_writer.write_line(f"{first_char_lower(self._function_name)}({first_char_lower(self.param)}{self._get_channel_names(True)})", indentation)
 
 
 class TypeMatch(Type):
@@ -158,14 +165,14 @@ class TypeMatch(Type):
     def get_continuation(self):
         return self._continuations
 
-    def get_function_body(self, role) -> str:
-        body = f"{first_char_lower(self._match_channel.get_channel_name())} match {{ \n"
+    def get_function_body(self,indentation, file_writer):
+        file_writer.write_line(f"{first_char_lower(self._match_channel.get_channel_name())} match {{", indentation)
         for i in range(len(self._labels)):
-             body += f'case {first_char_lower(self._match_channel.get_channel_name())} : {self._labels[i].get_name()} => {{ \n print("{role}: Received type {self._labels[i].get_name()} ' \
-                     f'from {first_char_lower(self._match_channel.get_channel_name())}\\n")' \
-                     f"\n{self._continuations[i].get_function_body(role)} \n }} \n"
-        body += "}"
-        return body
+             file_writer.write_line(f'case {first_char_lower(self._match_channel.get_channel_name())} : {self._labels[i].get_name()} => {{', indentation + 1)
+             file_writer.add_print(f'Received type {self._labels[i].get_name()} from {first_char_lower(self._match_channel.get_channel_name())}', indentation+2)
+             self._continuations[i].get_function_body(indentation + 2, file_writer)
+             file_writer.write_line(f"}}", indentation+1)
+        file_writer.write_line("}", indentation)
 
 class  Function(Type):
     def __init__(self,function_name, body, channels, is_main):
@@ -192,23 +199,23 @@ class  Function(Type):
             type += f"] = \n {self._body.get_type()} \n\n"
         return type
 
-    def get_function_body(self, role) -> str:
-        function = ""
-        function += f"def {first_char_lower(self._function_name)}( \n"
+    def get_function_body(self,indentation, function_writer):
+        function_writer.write_line(f"def {first_char_lower(self._function_name)}(", indentation)
         channel_type = ""
         for i in range(len(self._channels)):
             channel_name = first_char_lower(self._channels[i].get_channel_name())
-            function += f"{channel_name}: {self._channels[i].get_channel_type()}"
             channel_type += f"{channel_name}.type"
-            if i != len(self._channels) - 1:
-                        function += ",\n"
-                        channel_type += ","
+            comma = "," if i != len(self._channels) - 1 else ""
+            function_writer.write_line(f"{channel_name}: {self._channels[i].get_channel_type()}{comma}", indentation + 1)
+            channel_type += comma
         if not self._is_main:
-            function += f"):{self._function_name}[{channel_type}] =  {self._body.get_function_body(role)} \n\n"
+            function_writer.write_line(f"):{self._function_name}[{channel_type}] =", indentation)
+            self._body.get_function_body(indentation + 1, function_writer)
         else:
-          function += f"):{self._function_name}[{channel_type}] ={{ \n {self._body.get_function_body(role)} \n}} \n\n"
+            function_writer.write_line(f"):{self._function_name}[{channel_type}] ={{", indentation)
+            self._body.get_function_body(indentation+1, function_writer)
+            function_writer.write_line(f"}}", indentation)
 
-        return function
 
 
     def get_name(self):

@@ -9,7 +9,7 @@ class Type(ABC):
         raise NotImplementedError('Action.add_to_efsm')
 
     @abstractmethod
-    def get_function_body(self, role) -> str:
+    def get_function_body(self, indentation, file_writer):
         raise NotImplementedError('Action.add_to_efsm')
 
     @abstractmethod

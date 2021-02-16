@@ -138,3 +138,5 @@ dmypy.json
 node_modules/
 
 .eslintcache
+
+effpi-sandbox/
