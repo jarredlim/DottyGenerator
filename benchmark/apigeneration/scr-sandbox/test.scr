@@ -1,0 +1,63 @@
+module Test;
+
+global protocol Test(role Client, role Svr) {
+
+    rec Loop8 {  choice at Client { 
+ HELLO89(number) from Client to Svr; 
+ 
+ continue Loop8; 
+ } or { 
+ HELLO32(number, number, number, number, number, string, number) from Client to Svr; 
+ rec Loop7 {  choice at Client { 
+ HELLO37(number, number, number, string, string, number, string, string) from Client to Svr; 
+ 
+ continue Loop7; 
+ } or { 
+ HELLO41(number) from Client to Svr; 
+ rec Loop6 {  choice at Svr { 
+ HELLO81(string, string, string, string, string, number) from Svr to Client; 
+ 
+ continue Loop6; 
+ } or { 
+ HELLO86(string, string, number, string, number, number, string, number) from Svr to Client; 
+ rec Loop5 {  choice at Svr { 
+ HELLO99(string, number, number, string, number, string, string, string, number) from Svr to Client; 
+ 
+ continue Loop5; 
+ } or { 
+ HELLO92(string) from Svr to Client; 
+ rec Loop4 {  choice at Client { 
+ HELLO36(number, number, number, string, number, number) from Client to Svr; 
+ 
+ continue Loop4; 
+ } or { 
+ HELLO31(number, number, number, number, number, string, string, number) from Client to Svr; 
+ rec Loop3 {  choice at Svr { 
+ HELLO47(string, number, string) from Svr to Client; 
+ 
+ continue Loop3; 
+ } or { 
+ HELLO98(number, string, number, number, number, string, string) from Svr to Client; 
+ rec Loop2 {  choice at Client { 
+ HELLO47(number, string, string, number, number, number) from Client to Svr; 
+ 
+ continue Loop2; 
+ } or { 
+ HELLO43(string, number, number, number) from Client to Svr; 
+ rec Loop1 {  choice at Svr { 
+ HELLO13(number, string, string, number, number, number, string, number, number) from Svr to Client; 
+ 
+ continue Loop1; 
+ } or { 
+ HELLO14(number, number, number, string, string, string) from Svr to Client; 
+  
+ } } 
+ } } 
+ } } 
+ } } 
+ } } 
+ } } 
+ } } 
+ } }
+
+}

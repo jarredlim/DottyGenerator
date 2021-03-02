@@ -3,9 +3,10 @@ from dottygen.generator.utils import first_char_lower
 
 class Selection(Type):
 
-    def __init__(self, channel_name):
+    def __init__(self, channel_name, nested_type=None):
         self._output_channels = []
         self._channel_name = channel_name
+        self._nested_type = nested_type
 
     def get_channel_name(self):
         return self._channel_name
@@ -25,10 +26,10 @@ class Selection(Type):
             output += f"({self._output_channels[i].get_type()})"
             if i != len(self._output_channels) - 1:
                 output += "|"
-        return output
+        return f"({output})"
 
     def get_function_body(self, indentation, function_writer):
-        function_writer.write_line("val r = scala.util.Random", indentation)
+        function_writer.write_line("val r = scala.util.Random(System.currentTimeMillis())", indentation)
         function_writer.write_line(f'val decision = r.nextInt({len(self._output_channels)})', indentation)
         function_writer.add_print(f'Making selection through channel {first_char_lower(self._channel_name)}', indentation)
         for i in range(len(self._output_channels)):
@@ -41,7 +42,6 @@ class Selection(Type):
             self._output_channels[i].get_function_body(indentation + 1, function_writer)
             function_writer.write_line(f"}}", indentation)
 
-
     def get_labels_name(self):
         label_name = ""
         for i in range(len(self._output_channels)):
@@ -50,7 +50,15 @@ class Selection(Type):
                 label_name += "|"
         return label_name
 
+    def get_labels(self):
+        labels = []
+        for i in range(len(self._output_channels)):
+            labels += self._output_channels[i].get_labels()
+        return labels
+
     def get_channel_type(self):
+        if self._nested_type is not None:
+            return f"OutChannel[{self._nested_type}]"
         return f"OutChannel[{self.get_labels_name()}]"
 
 class Termination(Type):
@@ -81,7 +89,7 @@ class Goto(Type):
         return f"Loop[Rec{self._role}{self._state_id}]"
 
     def get_function_body(self, indentation, file_writer):
-        file_writer.add_print(f'print("go to loop Rec{self._role}{self._state_id}', indentation)
+        file_writer.add_print(f'go to loop Rec{self._role}{self._state_id}', indentation)
         file_writer.write_line(f'loop(Rec{self._role}{self._state_id})', indentation)
 
 class Loop(Type):
@@ -101,11 +109,9 @@ class Loop(Type):
 
     def get_function_body(self, indentation, file_writer):
         file_writer.write_line(f'rec(Rec{self._role}{self._state_id}){{', indentation)
-        file_writer.add_print(f'print("entering loop Rec{self._role}{self._state_id}")', indentation + 1)
+        file_writer.add_print(f'entering loop Rec{self._role}{self._state_id}', indentation + 1)
         self._body.get_function_body(indentation + 1, file_writer)
         file_writer.write_line(f'}}', indentation)
-        # return f'rec(Rec{self._role}{self._state_id}){{\n print("{role}: entering loop Rec{self._role}{self._state_id}\\n") ' \
-        #        f"\n {self._body.get_function_body(role)}\n}}"
 
 class FunctionLambda(Type):
 
@@ -164,6 +170,7 @@ class TypeMatch(Type):
              self._continuations[i].get_function_body(indentation + 2, file_writer)
              file_writer.write_line(f"}}", indentation+1)
         file_writer.write_line("}", indentation)
+
 
 class  Function(Type):
     def __init__(self,function_name, body, channels, is_main):

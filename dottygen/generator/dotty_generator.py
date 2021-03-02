@@ -1,4 +1,5 @@
 import typing
+import time
 from dottygen.generator.file_writer import FunctionWriter
 from dottygen.generator.choices import Selection, FunctionLambda, TypeMatch, Function, Termination, Goto, Loop
 from dottygen.generator.types import Label
@@ -39,20 +40,20 @@ class DottyGenerator:
 
         visited[state.id] = 0
 
-        channel_name = self._get_channel_name(actions[0].role, self._role)
+        assert(state.has_channel_name)
+        channel_name = state.channel_name
 
         if efsm.is_send_state(state):
             if(len(actions) == 1):
                 continuation, channels = self._build_helper(actions[0].succ, visited)
-                channel_list += channels
+                self._insert_channel(channel_list, channels)
                 type = OutChannel(channel_name, [self._get_label(actions[0])], continuation=continuation,
-                                         sender=self._role, receiver=
-                                         actions[0].role)
+                                         sender=self._role, receiver=actions[0].role)
             else:
                 type = Selection(channel_name)
                 for action in actions:
                     continuation, channels = self._build_helper(action.succ, visited)
-                    channel_list += channels
+                    self._insert_channel(channel_list, channels)
                     out_channel = OutChannel(channel_name, [self._get_label(action)], continuation=continuation, sender=self._role, receiver=
                                              actions[0].role)
                     type.add_continuation(out_channel)
@@ -70,7 +71,7 @@ class DottyGenerator:
                 channels.insert(0, match_channel)
                 self._function_list.append(Function(new_function_name, function_body, list(channels),False))
                 channels.remove(match_channel)
-            channel_list += channels
+            self._insert_channel(channel_list, channels)
             type = InChannel(channel_name, labels, continuation=continuation, sender=actions[0].role, receiver=self._role)
             type.add_lamda_param("x")
             channel_list.insert(0, type)
@@ -78,10 +79,15 @@ class DottyGenerator:
         if visited[state.id] > 0:
             self._recurse_generator.add_recursion(state.id, self._role)
             type = Loop(state.id, self._role, type)
-
         del visited[state.id]
 
         return type, channel_list
+
+    def _insert_channel(self,channel_list, channels):
+        for channel in channels:
+            if channel.get_channel_name() not in [channel.get_channel_name() for channel in channel_list]:
+                channel_list.append(channel)
+
 
     def _type_function(self, actions, match_channel, visited):
           channel_list = []
@@ -89,15 +95,17 @@ class DottyGenerator:
           labels = []
           for action in actions:
               continuation, channels = self._build_helper(action.succ, visited)
-              channel_list += channels
+              self._insert_channel(channel_list, channels)
               labels.append(self._get_label(action))
               continuations.append(continuation)
           return TypeMatch(labels, continuations, match_channel), channel_list
 
-    def _get_label(self, action):
+    def _get_label(self, action, add_to_list=True):
         label = Label(action.label, action.payloads)
-        self._labels.add(label)
+        if add_to_list:
+           self._labels.add(label)
         return label
+
 
     def _generate_type_match_function(self):
         self._function_count += 1
@@ -131,16 +139,31 @@ class DottyGenerator:
         current_state = efsm[efsm.initial_state.id]
         function_body, channels = self._build_helper(current_state, {})
         self._function_list.append(Function(self._role, function_body, list(channels), True))
+        return list(channels)
 
     def get_function_list(self):
         self._build_body()
         return self._function_list
 
-    def build(self, type_output_file):
-        self._build_body()
+    def build(self, counter):
+
+        start_time = time.time()
+        channels = self._build_body()
+        end_time = time.time()
+        counter.add_class_time(end_time - start_time)
+
+        start_time = time.time()
         type = self.generate_type()
+        end_time = time.time()
+        counter.add_type_time(end_time - start_time)
+
+        start_time = time.time()
         function = self.generate_functions()
-        return type, function, self._labels
+        end_time = time.time()
+        counter.add_function_time(end_time - start_time)
+
+
+        return type, function, self._labels, channels
 
 
 

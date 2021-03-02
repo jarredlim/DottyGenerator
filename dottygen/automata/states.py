@@ -6,6 +6,7 @@ class State(ABC):
     def __init__(self, state_id: str):
         super().__init__()
         self._id = state_id
+        self._is_set_channel = False
 
     @property
     def id(self) -> str:
@@ -13,11 +14,27 @@ class State(ABC):
 
         return self._id
 
+    @property
+    def channel_name(self):
+        """Return state identifier."""
+
+        return self._channel_name
+
+    @property
+    def has_channel_name(self):
+        """Return state identifier."""
+
+        return self._is_set_channel
+
     def __str__(self):
         return self.id
 
     def __repr__(self):
         return f'{self.__class__.__name__}(id={self.id})'
+
+    def set_channel_name(self, name):
+        self._channel_name = name
+        self._is_set_channel = True
 
 
 class TerminalState(State):
@@ -64,6 +81,7 @@ class NonTerminalState(State, ABC):
         corresponding Action instance for that labelled transition."""
 
         return self._actions[label]
+
 
     def __eq__(self, other: object) -> bool:
         """Perform deep equality check between two State instances. Two EFSM states

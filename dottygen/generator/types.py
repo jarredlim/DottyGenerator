@@ -26,8 +26,7 @@ class Label():
         return self._name
 
     def __eq__(self, other):
-
-        return self._name == other.get_name()
+       return self._name == other.get_name()
 
     def __hash__(self):
         return hash(self._name)
@@ -38,6 +37,8 @@ class Label():
     def _convert_payload_type(self, type):
         if "string" in type:
             return "String"
+        elif "date" in type:
+            return "Date"
         elif "number" in type:
             return "Int"
         return type
@@ -50,6 +51,8 @@ class Label():
             elif "string" in self._payload[i] or "String" in self._payload[i]:
                 output_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
                 output += f'"{output_string}"'
+            elif "date" in self._payload[i] or "Date" in self._payload[i]:
+                output += f'new Date()'
             if i != len(self._payload) - 1:
                 output += ","
         output += ")"

@@ -1,0 +1,22 @@
+module Test;
+
+global protocol Test(role C, role S)
+{
+  HELLO() from C to S;
+
+  choice at C
+  {
+    ADD() from C to S;
+    choice at C{
+      BLA1() from C to S;
+    }
+    or{
+     BYE2() from C to S;
+    }
+
+  }
+  or
+  {
+    BYE() from C to S;
+  }
+}

@@ -12,7 +12,7 @@ import effpi.recurse._
 import effpi.process._
 import effpi.process.dsl._
 import effpi.channel.{Channel, InChannel, OutChannel}
-import java.time.LocalDate
+import java.util.Date
 
 package types {
 
@@ -39,6 +39,9 @@ object Main {
   def main(args: Array[String]) = {
     println("Successfully compiled! Running now...")
     implicit val ps = effpi.system.ProcessSystemRunnerImproved()
+
+    CHANNEL_ASSIGN
+
     Thread.sleep(1000)
     ps.kill()
   }

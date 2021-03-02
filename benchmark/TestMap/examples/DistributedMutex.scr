@@ -1,0 +1,28 @@
+module Mutex;
+
+global protocol Mutex(role C, role A, role B)
+{
+
+ rec Loop{
+  Request(x: string) from A to C;
+  Request(x: string) from B to C;
+
+  choice at C {
+    Proceed() from C to A;
+    Wait() from C to B;
+    Complete() from A to C;
+    Proceed() from C to B;
+    Complete() from B to C;
+    continue Loop;
+  }
+   or{
+    Wait() from C to A;
+    Proceed() from C to B;
+    Complete() from B to C;
+    Proceed() from C to A;
+    Complete() from A to C;
+    continue Loop;
+  }
+ }
+
+}

@@ -1,0 +1,52 @@
+module AnotherTest;
+
+global protocol AnotherTest(role C, role S, role P)
+{
+    HELLO(u:number) from C to S;
+    choice at S
+    {
+      ADD(w:number) from S to C;
+      choice at P
+      {
+        Test1() from P to S;
+         NNN() from S to P;
+      }
+      or
+      {
+       Test2() from P to S;
+       YYY() from S to P;
+      }
+    }
+    or
+    {
+      BYE() from S to C;
+      choice at C
+      {
+       HHH() from C to S;
+       choice at P
+      {
+        Test1() from P to S;
+        NNN() from S to P;
+      }
+      or
+      {
+       Test2() from P to S;
+       YYY() from S to P;
+      }
+      }
+      or
+      {
+       JJJ() from C to S;
+       choice at P
+      {
+        Test1() from P to S;
+        NNN() from S to P;
+      }
+      or
+      {
+       Test2() from P to S;
+       YYY() from S to P;
+      }
+      }
+    }
+}

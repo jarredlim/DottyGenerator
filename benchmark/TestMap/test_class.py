@@ -12,7 +12,7 @@ from dottygen.generator.types import Label
 
 def get_test_class(filename, protocol):
 
-    filename = os.path.abspath(os.path.join('dottygen', 'tests', 'system', 'examples', filename))
+    filename = os.path.abspath(os.path.join('benchmark', 'TestMap','examples', filename))
 
     class CodeGenerationTest(unittest.TestCase):
 

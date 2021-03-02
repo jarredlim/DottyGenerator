@@ -1,17 +1,19 @@
 from abc import abstractmethod
 
 from dottygen.generator.types import Type
-from dottygen.generator.utils import first_char_lower
+from dottygen.generator.utils import first_char_lower, get_labels_name
 
 class Channel(Type):
 
 
-    def __init__(self, channel_name: str, labels, continuation="", sender="", receiver = ""):
+    def __init__(self, channel_name: str, labels, continuation="", sender="", receiver = "", is_nested=False, nested_type=None):
         self._channel_name = channel_name
         self.labels = labels
         self.continuation = continuation
         self.sender = sender
         self.receiver = receiver
+        self.is_nested = is_nested
+        self._nested_type = nested_type
 
     @abstractmethod
     def get_channel_type(self):
@@ -27,12 +29,13 @@ class Channel(Type):
         return self.labels
 
     def get_labels_name(self):
-        label_name = ""
-        for i in range(len(self.labels)):
-            label_name += self.labels[i].get_name()
-            if i != len(self.labels) - 1:
-                label_name += "|"
-        return label_name
+        return get_labels_name(self.labels)
+
+    def __eq__(self, other):
+        return self._channel_name == other.get_channel_name
+
+    def __hash__(self):
+        return hash(self._channel_name)
 
     def get_channel_name(self):
         return self._channel_name
@@ -45,9 +48,14 @@ class Channel(Type):
 class OutChannel(Channel):
 
     def get_type(self) -> str:
+        if self.is_nested:
+          return f"Out[{self.get_channel_type()},{self.get_labels_name()}] >>: {self.continuation.get_type()}"
+
         return f"Out[{self._channel_name},{self.get_labels_name()}] >>: {self.continuation.get_type()}"
 
     def get_channel_type(self):
+        if self.is_nested:
+            return f"OutChannel[{self._nested_type}]"
         return f"OutChannel[{self.get_labels_name()}]"
 
     def get_function_body(self, indentation, function_writer):
@@ -76,9 +84,9 @@ class InChannel(Channel):
 
     def get_type(self) -> str:
         labels_name = self.get_labels_name()
-        if len(self.labels) == 1:
-            return f"In[{self._channel_name}, {labels_name}, {labels_name} => \n{self.continuation.get_type()}]"
-        else :
+        if self.is_nested:
+            return f"In[{self.get_channel_type()}, {labels_name}, ({self.param}:{labels_name}) => {self.continuation.get_type()}]"
+        else:
             return f"In[{self._channel_name}, {labels_name}, ({self.param}:{labels_name}) => {self.continuation.get_type()}]"
 
     def get_channel_type(self):

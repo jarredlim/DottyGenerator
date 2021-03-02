@@ -1,12 +1,10 @@
 import os
-import shutil
 import subprocess
 import typing
 import unittest
 
 from dottygen.cli import main as run_codegen
-from dottygen.tests.system.utils import TEST_DIR, TestFile
-from dottygen.tests.system.test_class import get_test_class
+from dottygen.tests.system.utils import TEST_DIR
 from dottygen.utils import logger
 
 
@@ -65,9 +63,9 @@ def _build_test_case(*,
 
 def build_test_suite(tests) -> unittest.TestSuite:
     suite = unittest.TestSuite()
-    for test in tests["map_test"]:
+    for test in tests:
         for protocol in test.protocols:
-            TestCase = get_test_class(filename=test.filename,
+            TestCase = _build_test_case(filename=test.filename,
                                         protocol=protocol.identifier)
 
             suite.addTests(unittest.makeSuite(TestCase))

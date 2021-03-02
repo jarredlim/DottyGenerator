@@ -1,0 +1,31 @@
+module TwoBuyerNegotiate;
+
+
+global protocol TwoBuyerNegotiate(role A, role B, role S)
+{
+  START(location: string) from A to S;
+  PRICE(amount: number) from S to A;
+  PRICE(amount: number) from S to B;
+
+  rec Loop {
+     OFFER(amount: number) from B to S;
+     OFFER(amount: number) from S to A;
+     choice at A
+     {
+       BUY(address: string) from A to S;
+       CONFIRM(departure: date) from S to A;
+       CONFIRM(departure: date) from S to B;
+     }
+     or
+     {
+       CANCEL() from A to S;
+       CANCEL() from S to B;
+     }
+     or
+     {
+       NEGOTIATE() from A to S;
+       NEGOTIATE() from S to B;
+       continue Loop;
+     }
+  }
+}

@@ -1,9 +1,13 @@
 from argparse import ArgumentParser
 import typing
+import time
 
+from benchmark.apigeneration.counter import Counter
 from dottygen.automata import parser as automata_parser
 from dottygen.utils import logger, scribble, type_declaration_parser, role_parser
 from dottygen.generator import DottyGenerator
+from dottygen.generator.merger import Merger
+from dottygen.generator.channel_generator import CaseClassGenerator, ChannelGenerator
 from dottygen.generator.file_writer import FileWriter, RecurseTypeGenerator
 
 def parse_arguments(args: typing.List[str]) -> typing.Dict:
@@ -28,14 +32,6 @@ def parse_arguments(args: typing.List[str]) -> typing.Dict:
     return vars(parsed_args)
 
 
-def _generate_case_classes(labels):
-    case_class = ""
-    for label in labels:
-        case_class += f"case class {label.get_name()}({label.get_payload_string()})\n"
-    case_class += "\n"
-    return case_class
-
-
 def main(args: typing.List[str]) -> int:
     """Main entry point, return exit code."""
 
@@ -46,18 +42,27 @@ def main(args: typing.List[str]) -> int:
     output_file = parsed_args['output']
     env = parsed_args['env']
     scribble_file = parsed_args['filename']
+    return generate(env, output_file, protocol, scribble_file)
+
+
+def generate(env, output_file, protocol, scribble_file, counter=Counter()):
     types = []
     functions = []
     labels = set()
-    all_roles = role_parser.parse(parsed_args['filename'], parsed_args['protocol'])
+    channel_list = []
+    efsms = {}
+    all_roles = role_parser.parse(scribble_file, protocol)
     recurse_generator = RecurseTypeGenerator()
     recurse_generator.setup()
-
     for role in all_roles:
+        counter.set_role(role)
         try:
             message = f'Role {role} : Getting protocol from {scribble_file}'
             with type_declaration_parser.parse(scribble_file) as custom_types:
+                start_time = time.time()
                 exit_code, output = scribble.get_graph(scribble_file, protocol, role)
+                end_time = time.time()
+                counter.add_nuscr_time(end_time - start_time)
                 if exit_code != 0:
                     logger.FAIL(message)
                     logger.ERROR(output)
@@ -69,36 +74,47 @@ def main(args: typing.List[str]) -> int:
 
         phase = f'Role {role} : Parse endpoint IR from Scribble output'
         try:
+            start_time = time.time()
             efsm = automata_parser.from_data(output)
+            end_time = time.time()
+            counter.add_efsm_time(end_time - start_time)
+            efsms[role] = efsm
             logger.SUCCESS(phase)
         except ValueError as error:
             logger.FAIL(phase)
             logger.ERROR(error)
             return 1
 
+    merger = Merger(efsms)
+    channel_map = merger.merge()
+
+    for role in all_roles:
+        counter.set_role(role)
+        efsm = efsms[role]
         phase = f'Role {role} : Generating Type from EFSM'
         try:
             other_roles = all_roles - set(role)
-            generator = DottyGenerator(efsm=efsm, protocol=protocol, role=role, other_roles=other_roles, recurse_generator=recurse_generator)
-            type, function, label = generator.build(output_file)
+            generator = DottyGenerator(efsm=efsm, protocol=protocol, role=role, other_roles=other_roles,
+                                       recurse_generator=recurse_generator)
+            type, function, label, channels = generator.build(counter)
             types.append(type)
             functions.append(function)
+            channel_list.append((role, channels))
             labels = labels.union(label)
             logger.SUCCESS(phase)
         except (OSError, ValueError) as error:
             logger.FAIL(phase)
             logger.ERROR(error)
             return 1
-
     phase = f'Writing functions and types into file'
     try:
-        case_classes = _generate_case_classes(labels)
+        case_classes = CaseClassGenerator(labels).generate()
+        channels_assign = ChannelGenerator(channel_list, channel_map).generate()
         fileWriter = FileWriter()
-        function_string = "".join(functions) if env != "test" else ""
-        fileWriter.write_to_basic_template(output_file, case_classes, "".join(types), function_string)
+        function_string = "".join(functions) if env != "dev" else ""
+        fileWriter.write_to_basic_template(output_file, case_classes, "".join(types), function_string, channels_assign)
     except (OSError, ValueError) as error:
         logger.FAIL(phase)
         logger.ERROR(error)
         return 1
-
     return 0

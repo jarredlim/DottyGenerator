@@ -92,6 +92,8 @@ RUN echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.lis
 ##############################################################################
 # Perf benchmarks
 ##############################################################################
+ COPY --chown=dev:dev \
+  benchmark /home/dev/benchmark/
 
 COPY --chown=dev:dev \
   perf-benchmarks/requirements.txt /home/dev/dependencies/requirements.benchmarks.txt

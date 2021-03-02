@@ -9,6 +9,7 @@ services:
       - ./codegen:/home/dev/codegen
       - ./dottygen:/home/dev/dottygen
       - ./perf-benchmarks:/home/dev/perf-benchmarks
+      - ./benchmark:/home/dev/benchmark
       - ./protocols:/home/dev/protocols
       - ./scripts:/home/dev/scripts
       - ./effpi-sandbox:/home/dev/effpi-sandbox
@@ -31,6 +32,7 @@ services:
 
 volumes:
   case-studies:
+  benchmark:
   codegen:
   dottygen:
   perf-benchmarks:

@@ -1,0 +1,7 @@
+module Test;
+
+global protocol Test(role Client, role Svr) {
+
+    PROTOCOLS
+
+}
