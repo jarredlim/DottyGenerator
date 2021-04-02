@@ -86,7 +86,10 @@ RUN echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.lis
   effpi/project/assembly.sbt /home/dev/project/
 
   COPY --chown=dev:dev \
-  effpi/project/plugins.sbt /home/dev/project/
+  project/plugins.sbt /home/dev/project/
+
+  COPY --chown=dev:dev \
+  project/build.properties /home/dev/project/
 
 
 ##############################################################################

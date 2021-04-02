@@ -3,6 +3,7 @@ import typing
 import time
 
 from benchmark.apigeneration.counter import Counter
+from benchmark.codeline.line_counter import LineCounter
 from dottygen.automata import parser as automata_parser
 from dottygen.utils import logger, scribble, type_declaration_parser, role_parser
 from dottygen.generator import DottyGenerator
@@ -45,7 +46,7 @@ def main(args: typing.List[str]) -> int:
     return generate(env, output_file, protocol, scribble_file)
 
 
-def generate(env, output_file, protocol, scribble_file, counter=Counter()):
+def generate(env, output_file, protocol, scribble_file, counter=Counter(), line_counter=LineCounter()):
     types = []
     functions = []
     labels = set()
@@ -85,8 +86,11 @@ def generate(env, output_file, protocol, scribble_file, counter=Counter()):
             logger.ERROR(error)
             return 1
 
+    start_time = time.time()
     merger = Merger(efsms)
     channel_map = merger.merge()
+    end_time = time.time()
+    counter.add_merge_time(end_time-start_time)
 
     for role in all_roles:
         counter.set_role(role)
@@ -108,10 +112,20 @@ def generate(env, output_file, protocol, scribble_file, counter=Counter()):
             return 1
     phase = f'Writing functions and types into file'
     try:
+        # print(counter.get_merge_time())
+        # print(counter.get_class_time())
+        # print(counter.get_efsm_time())
+        # print(counter.get_type_time())
+        # print(counter.get_function_time())
+        # print(counter.get_nuscr_time())
+        #print(counter.get_merge_time() + counter.get_class_time() + counter.get_efsm_time() + counter.get_type_time() + counter.get_function_time() + counter.get_nuscr_time())
+        line_counter.add_case_class(labels)
         case_classes = CaseClassGenerator(labels).generate()
         channels_assign = ChannelGenerator(channel_list, channel_map).generate()
         fileWriter = FileWriter()
-        function_string = "".join(functions) if env != "dev" else ""
+        function_string, channels_assign = ("".join(functions), channels_assign) if env != "test" else ("", "")
+        line_counter.add_types(types)
+        line_counter.add_functions(functions)
         fileWriter.write_to_basic_template(output_file, case_classes, "".join(types), function_string, channels_assign)
     except (OSError, ValueError) as error:
         logger.FAIL(phase)

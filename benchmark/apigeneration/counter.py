@@ -5,6 +5,7 @@ class Counter:
     _class_timer = 0
     _efsm_timer = 0
     _nuscr_timer = 0
+    _merge_timer = 0
     _role = "null"
     _print_list = []
 
@@ -43,6 +44,11 @@ class Counter:
             self._add_print(time, "Generating nuscr")
             self._nuscr_timer += time
 
+    def add_merge_time(self, time):
+        if time >= 0:
+            self._add_print(time, "merging")
+            self._merge_timer += time
+
     def get_function_time(self):
         return self._function_timer
 
@@ -57,3 +63,6 @@ class Counter:
 
     def get_type_time(self):
         return self._type_timer
+
+    def get_merge_time(self):
+        return self._merge_timer

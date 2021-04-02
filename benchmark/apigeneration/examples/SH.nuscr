@@ -1,0 +1,29 @@
+module SH;
+
+global protocol SH(role S, role C, role P)
+{
+sent(x1:number) from S to C;
+rec Loop {
+  choice at S {
+      vertex(p1:number) from S to C;
+      vertex(p2:number) from S to C;
+      choice at C {
+          InOrOut(res:number) from C to S; @"res=0"
+            choice at S {
+           addpoint(z:number) from S to P; @"z=p2"
+           continue Loop;
+          } or {
+          none() from S to P;  @"res=1"
+          continue Loop;
+        }
+      } or {
+        intersection(p3:number) from C to S;
+        addpoint(p4:number) from S to P; @"p3=p4"
+        continue Loop;
+         }
+   } or {
+      close() from S to C;
+      close() from S to P;
+   }
+  }
+}

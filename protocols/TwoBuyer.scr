@@ -1,17 +1,18 @@
 module TwoBuyer;
 
-global protocol TwoBuyer(role BuyerA, role BuyerB, role Seller) {
-
-    title(string)   from BuyerA to Seller;
-	quote(number)   from Seller to BuyerA;
-	quote(number)   from Seller to BuyerB;
-	split(number)   from BuyerA to BuyerB;
-	choice at BuyerB {
-		accept()    from BuyerB to BuyerA;
-		buy()       from BuyerA to Seller;
-	} or {
-		reject()    from BuyerB to BuyerA;
-		cancel()    from BuyerA to Seller;
-	}
-
+global protocol TwoBuyer(role A, role B, role S)
+{
+  title(number) from A to S;
+  quote(number) from S to A;
+  quote(number) from S to B;
+  quoteByTwo(z:int) from A to B;
+  choice at B
+  {
+    ok(int) from B to S; @"z > y - 2"
+    empty1(int) from S to B;
+  }
+  or
+  {
+    quit() from B to S; @"z <= y - 2"
+  }
 }
