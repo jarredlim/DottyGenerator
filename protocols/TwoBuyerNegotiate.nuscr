@@ -1,5 +1,4 @@
-module TwoBuyerNegotiate;
-
+module TwoBuyer;
 
 global protocol TwoBuyer(role A, role B, role S)
 {

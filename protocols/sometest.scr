@@ -1,6 +1,6 @@
-module AnotherTest;
+module Test;
 
-global protocol AnotherTest(role C, role S, role P)
+global protocol Test(role C, role S, role P)
 {
     HELLO(u:number) from C to S;
     choice at S
