@@ -62,7 +62,43 @@ class Merger():
                     return i
         return -1
 
-    def _merge_two_state(self,role1, role2, efsm1, efsm2, state1, state2, count12, count21, channel_map, visited1, visited2):
+    def _match_channels(self,states1, states2, channel_list, efsm1,efsm2, count, role1, role2, channel_set):
+
+        if len(states1) == 0 or len(states2) == 0:
+            return False, "null", count
+
+        for state in states1:
+            if efsm1.is_terminal_state(state):
+                return False, "null", count
+
+        for state in states2:
+            if efsm2.is_terminal_state(state):
+                return False, "null", count
+
+        labels_set = set([action.label for action in states1[0].actions])
+
+        for state in states1 + states2:
+            if state.has_channel_name or set([action.label for action in state.actions]) != labels_set:
+                return False, "null", count
+
+        channel_type = ""
+        if efsm1.is_send_state(states1[0]):
+            channel_type = "OUT"
+        elif efsm1.is_receive_state(states1[0]):
+            channel_type = "IN"
+
+        for channel_name, type, labels in channel_list:
+            if type == channel_type and labels == labels_set:
+                return True, channel_name, count
+
+        channel_name = self._generate_channel_name(count, role1, role2)
+        channel_set.add(channel_name)
+        channel_list.append((channel_name, channel_type, labels_set))
+
+        return True, channel_name, count+1
+
+
+    def _merge_two_state(self,role1, role2, efsm1, efsm2, state1, state2, count12, count21, channel_map, visited1, visited2, channel_list1, channel_list2):
         states1 = [state1]
         states2 = [state2]
 
@@ -80,20 +116,28 @@ class Merger():
         if map_index != -1:
             channel_set = channel_map.pop(map_index)
 
+        has_matched1, new_chan_name1, count12 = self._match_channels(states1, states2, channel_list1, efsm1, efsm2, count12, role1, role2, channel_set)
+        has_matched2, new_chan_name2, count21 = self._match_channels(states2, states1, channel_list2, efsm2, efsm1, count21, role2, role1, channel_set)
+
         for state in states1:
-            if not efsm1.is_terminal_state(state) and not state.has_channel_name:
+            if has_matched1:
+                state.set_channel_name(new_chan_name1)
+            elif not efsm1.is_terminal_state(state) and not state.has_channel_name:
                 channel_name = self._generate_channel_name(count12, role1, role2)
                 channel_set.add(channel_name)
                 state.set_channel_name(channel_name)
                 count12 += 1
         for state in states2:
-            if not efsm2.is_terminal_state(state) and not state.has_channel_name:
+            if has_matched2:
+                state.set_channel_name(new_chan_name2)
+            elif not efsm2.is_terminal_state(state) and not state.has_channel_name:
                 channel_name = self._generate_channel_name(count21, role2, role1)
                 channel_set.add(channel_name)
                 state.set_channel_name(channel_name)
                 count21 += 1
 
-        channel_map.append(channel_set)
+        if len(channel_set) > 0:
+            channel_map.append(channel_set)
 
         actions1 = []
         actions2 = []
@@ -110,11 +154,11 @@ class Merger():
             action1 = actions1.pop(0)
             while self._search_action_index(action1, actions2) != -1 :
                 action2 = actions2.pop(self._search_action_index(action1, actions2))
-                count12, count21 = self._merge_two_state(role1, role2, efsm1, efsm2, action1.succ, action2.succ, count12, count21, channel_map, visited1, visited2)
+                count12, count21 = self._merge_two_state(role1, role2, efsm1, efsm2, action1.succ, action2.succ, count12, count21, channel_map, visited1, visited2, channel_list1, channel_list2)
             assert(action2 is not None)
             while self._search_action_index(action2, actions1) != -1 :
                 action1 = actions1.pop(self._search_action_index(action2, actions1))
-                count12, count21 = self._merge_two_state(role1, role2, efsm1, efsm2, action1.succ, action2.succ, count12, count21, channel_map, visited1, visited2)
+                count12, count21 = self._merge_two_state(role1, role2, efsm1, efsm2, action1.succ, action2.succ, count12, count21, channel_map, visited1, visited2, channel_list1, channel_list2)
 
         visited1 = old_visited1
         visited2 = old_visited2
@@ -128,5 +172,5 @@ class Merger():
             for j in range(i+1, len(keys)):
                 efsm1 = self._efsms[keys[i]]
                 efsm2 = self._efsms[keys[j]]
-                self._merge_two_state(keys[i], keys[j], efsm1, efsm2, efsm1[efsm1.initial_state.id], efsm2[efsm2.initial_state.id], 1,1, channel_map,set(), set())
+                self._merge_two_state(keys[i], keys[j], efsm1, efsm2, efsm1[efsm1.initial_state.id], efsm2[efsm2.initial_state.id], 1,1, channel_map,set(), set(), [], [])
         return channel_map
