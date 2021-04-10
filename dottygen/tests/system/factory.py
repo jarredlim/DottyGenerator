@@ -13,7 +13,7 @@ def _build_test_case(*,
                      protocol: str) -> typing.Type[unittest.TestCase]:
 
     output_file = f"test.scala"
-    parent_output = os.path.abspath(os.path.join('effpi-sandbox',output_file))
+    parent_output = os.path.abspath(os.path.join('effpi_sandbox',output_file))
 
     class CodeGenerationTest(unittest.TestCase):
 

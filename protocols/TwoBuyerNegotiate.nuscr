@@ -1,7 +1,7 @@
 module TwoBuyerNegotiate;
 
 
-global protocol TwoBuyerNegotiate(role A, role B, role S)
+global protocol TwoBuyer(role A, role B, role S)
 {
   START(location: string) from A to S;
   PRICE(amount: number) from S to A;

@@ -88,7 +88,7 @@ def generate_api_test(test_name):
             with open(output_file, "w") as f:
                 f.write(newText)
 
-            generate("dev", "/home/dev/effpi-sandbox/dotty_types.scala", "Test", output_file, counter)
+            generate("dev", "/home/dev/effpi_sandbox/dotty_types.scala", "Test", output_file, counter)
         x.append(i)
         function_time.append(counter.get_function_time()/10)
         nuscr_time.append(counter.get_nuscr_time()/10)

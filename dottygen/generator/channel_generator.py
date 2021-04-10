@@ -54,6 +54,7 @@ class ChannelGenerator():
                 participant_channels.append(channel_names[channel_index])
             participant_funcs.append(f"{first_char_lower(role)}({', '.join(participant_channels)})")
 
-        return f"val({', '.join(channel_names)}) = ({', '.join(channel_types)}) \n" \
-               f"eval(par({', '.join(participant_funcs)}))\n"
+        splitter =',\n     '
+        return f"val({', '.join(channel_names)}) = \n     ({splitter.join(channel_types)}) \n\n" \
+               f"    eval(par(\n     {splitter.join(participant_funcs)}))\n"
 

@@ -1,18 +1,7 @@
 from pathlib import Path
 import shutil, os
 
-basic_template_path =  os.path.abspath(os.path.join('dottygen','generator', "templates", "basic.scala"))
-
 class FileWriter:
-
-    def write_to_basic_template(self, output_file, case_classes, effpi_types, functions, channels_assign):
-         shutil.copyfile(basic_template_path,output_file)
-         with open(output_file) as f:
-             newText = f.read().replace('CASE_CLASSES', case_classes).replace("EFFPI_TYPES", effpi_types).replace("FUNCTIONS", functions).replace("CHANNEL_ASSIGN", channels_assign)
-
-         with open(output_file, "w") as f:
-             f.write(newText)
-
 
     def append_to_file(self, output_file, output):
         f = Path(output_file)

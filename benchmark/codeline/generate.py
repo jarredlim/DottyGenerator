@@ -84,7 +84,7 @@ def generate_code_line(test_name):
         with open(output_file, "w") as f:
             f.write(newText)
 
-        generate("dev", "/home/dev/effpi-sandbox/dotty_types.scala", "Test", output_file, Counter(), counter)
+        generate("dev", "/home/dev/effpi_sandbox/dotty_types.scala", "Test", output_file, Counter(), counter)
         x.append(i)
         function_line.append(counter.get_function_line())
         type_line.append(counter.get_type_line())

@@ -1,0 +1,15 @@
+module Dummy;
+
+global protocol Dummy(role Client, role Svr) {
+
+    choice at Client {
+        Test1(number, number) from Client to Svr;
+        Test2(number) from Svr to Client;
+        do Dummy(Svr, Client);
+    } or {
+        Test3(number, number) from Client to Svr;
+        Test4(number) from Svr to Client;
+        do Dummy(Svr, Client);
+    }
+
+}

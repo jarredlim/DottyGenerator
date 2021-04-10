@@ -121,15 +121,25 @@ def pluginOpts(verbose: Boolean, keepTmp: Boolean,
   }
 }
 
-lazy val tests = project
-  .in(file("./effpi-sandbox"))
+lazy val examples = project
   .dependsOn(effpi)
   .settings(
     name := "effpi-examples",
     version := effpiVersion,
     scalaVersion := dottyVersion,
-    scalacOptions ++= pluginOpts(false, false).value,
+    scalacOptions ++= pluginOpts(false, false).value
   )
+
+lazy val tests = project
+  .in(file("effpi_sandbox"))
+  .dependsOn(effpi)
+  .settings(
+    name := "effpi-sandbox",
+    version := effpiVersion,
+    scalaVersion := dottyVersion,
+    scalacOptions ++= pluginOpts(false, false).value
+  )
+
 
 lazy val pluginBenchmarks = project
   .in(file("./effpi/plugin-benchmarks"))

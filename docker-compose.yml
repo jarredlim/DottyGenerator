@@ -12,7 +12,7 @@ services:
       - ./benchmark:/home/dev/benchmark
       - ./protocols:/home/dev/protocols
       - ./scripts:/home/dev/scripts
-      - ./effpi-sandbox:/home/dev/effpi-sandbox
+      - ./effpi_sandbox:/home/dev/effpi_sandbox
     ports: 
       - "127.0.0.1:3000:3000"
       - "127.0.0.1:5000:5000"
@@ -26,7 +26,7 @@ services:
     volumes:
       - ./codegen:/home/dev/codegen
       - ./dottygen:/home/dev/dottygen
-      - ./effpi-sandbox:/home/dev/effpi-sandbox
+      - ./effpi_sandbox:/home/dev/effpi_sandbox
     command: 
       python3.8 -m codegen.tests.system
 
@@ -38,4 +38,4 @@ volumes:
   perf-benchmarks:
   protocols:
   scripts:
-  effpi-sandbox:
+  effpi_sandbox:

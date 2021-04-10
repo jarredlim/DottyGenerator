@@ -4,34 +4,16 @@
 
 package effpi_sandbox.PROTOCOL
 
-import scala.concurrent.duration.Duration
-
-import effpi.recurse._
-import effpi.process._
 import effpi.process.dsl._
-import effpi.channel.{Channel, InChannel, OutChannel}
-import java.util.Date
+import effpi.channel.Channel
 
-package types {
-
-CASE_CLASSES
-EFFPI_TYPES
-}
-
-package implementation {
-  import types._
-  implicit val timeout: Duration = Duration("60 seconds")
-  import effpi.process.dsl._
-
-  FUNCTIONS
-}
+IMPORT_TYPES
+IMPORT_IMPLEMENTATIONS
+import effpi_sandbox.caseclass._
 
 // To run this example, try:
 // sbt 'tests/runMain effpi_sandbox.PROTOCOL.Main'
 object Main {
-  import types._
-  import implementation._
-
   def main(): Unit = main(Array())
 
   def main(args: Array[String]) = {

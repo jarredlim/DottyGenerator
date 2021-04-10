@@ -166,7 +166,7 @@ class TypeMatch(Type):
         file_writer.write_line(f"{first_char_lower(self._match_channel.get_channel_name())} match {{", indentation)
         for i in range(len(self._labels)):
              file_writer.write_line(f'case {first_char_lower(self._match_channel.get_channel_name())} : {self._labels[i].get_name()} => {{', indentation + 1)
-             file_writer.add_print(f'Received type {self._labels[i].get_name()} from {first_char_lower(self._match_channel.get_channel_name())}', indentation+2)
+             file_writer.add_print(f'Actual type Received from {first_char_lower(self._match_channel.get_channel_name())}: {self._labels[i].get_name()}', indentation+2)
              self._continuations[i].get_function_body(indentation + 2, file_writer)
              file_writer.write_line(f"}}", indentation+1)
         file_writer.write_line("}", indentation)

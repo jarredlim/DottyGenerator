@@ -2,7 +2,7 @@ module SH;
 
 global protocol SH(role S, role C, role P)
 {
-send(x1:number) from S to C;
+sender(x1:number) from S to C;
 rec Loop {
   choice at S {
       vertex(p1:number) from S to C;
