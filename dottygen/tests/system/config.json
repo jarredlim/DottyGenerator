@@ -1,23 +1,30 @@
 {
     "type_compile_tests": [
     {
-        "filename": "Buyers.scr",
-        "protocols": [
-            {
-                "identifier": "Buyers"
-            }
-        ]
-    },
-    {
         "filename": "Submission.scr",
         "protocols": [
             {
                 "identifier": "Game"
             }
         ]
+    },{
+        "filename": "Simple.scr",
+        "protocols": [
+            {
+                "identifier": "Simple"
+            }
+        ]
     },
     {
         "filename": "TwoBuyer.scr",
+        "protocols": [
+            {
+                "identifier": "TwoBuyer"
+            }
+        ]
+    },
+    {
+        "filename": "TwoBuyerNegotiate.nuscr",
         "protocols": [
             {
                 "identifier": "TwoBuyer"
@@ -37,6 +44,138 @@
         "protocols": [
             {
                 "identifier": "SH"
+            }
+        ]
+    },
+    {
+        "filename": "SH2.nuscr",
+        "protocols": [
+            {
+                "identifier": "SH"
+            }
+        ]
+    },
+    {
+        "filename": "anothertest.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },
+    {
+        "filename": "ArtSeller.scr",
+        "protocols": [
+            {
+                "identifier": "ArtSeller"
+            }
+        ]
+    },
+    {
+        "filename": "Battleships.scr",
+        "protocols": [
+            {
+                "identifier": "Battleships"
+            }
+        ]
+    },
+    {
+        "filename": "Calculator.scr",
+        "protocols": [
+            {
+                "identifier": "Calculator"
+            }
+        ]
+    },
+    {
+        "filename": "hard.scr",
+        "protocols": [
+            {
+                "identifier": "Hard"
+            }
+        ]
+    },{
+        "filename": "PingPong.scr",
+        "protocols": [
+            {
+                "identifier": "PingPong"
+            }
+        ]
+    },{
+        "filename": "sometest.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },{
+        "filename": "Test.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },{
+        "filename": "Tester.scr",
+        "protocols": [
+            {
+                "identifier": "Tester"
+            }
+        ]
+    },{
+        "filename": "TravelAgency.scr",
+        "protocols": [
+            {
+                "identifier": "TravelAgency"
+            }
+        ]
+    },{
+        "filename": "TravelAgency2.scr",
+        "protocols": [
+            {
+                "identifier": "Booking"
+            }
+        ]
+    },{
+        "filename": "Negotiate.scr",
+        "protocols": [
+            {
+                "identifier": "Negotiate"
+            }
+        ]
+    },{
+        "filename": "Fib.scr",
+        "protocols": [
+            {
+                "identifier": "Fib"
+            }
+        ]
+    },{
+        "filename": "Calc.scr",
+        "protocols": [
+            {
+                "identifier": "Calc"
+            }
+        ]
+    },{
+        "filename": "OnlineWallet.scr",
+        "protocols": [
+            {
+                "identifier": "OnlineWallet"
+            }
+        ]
+    },{
+        "filename": "Ticket.scr",
+        "protocols": [
+            {
+                "identifier": "Ticket"
+            }
+        ]
+    },{
+        "filename": "Http.scr",
+        "protocols": [
+            {
+                "identifier": "Http"
             }
         ]
     }

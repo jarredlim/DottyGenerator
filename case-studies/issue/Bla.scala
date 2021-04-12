@@ -1,8 +1,7 @@
 // Effpi - verified message-passing programs in Dotty
 // Copyright 2020 Alceste Scalas
 // Released under the MIT License: https://opensource.org/licenses/MIT
-
-package effpi_sandbox.Bla
+package effpi.examples.demo.bla
 
 import scala.concurrent.duration.Duration
 
@@ -80,7 +79,7 @@ package implementation {
 }
 
 // To run this example, try:
-// sbt 'tests/runMain effpi_sandbox.Bla.Main'
+// sbt "examples/runMain effpi.examples.demo.bla.Main"
 object Main {
   import types._
   import implementation._

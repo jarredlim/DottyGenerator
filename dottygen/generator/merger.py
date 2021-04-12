@@ -10,8 +10,6 @@ class Merger():
         return True
 
     def _is_two_party(self, efsm, states, role, visited):
-        if self._is_terminal_or_visited(efsm, states, visited):
-            return True
         for state in states:
             if not efsm.is_terminal_state(state):
                 actions = list(state.actions)
@@ -23,16 +21,24 @@ class Merger():
 
     def _remove_third_pary(self, states, role, efsm, visited):
         while not self._is_two_party(efsm, states, role, visited):
+            old_states = set([state.id for state in states])
             new_states = []
             while len(states) > 0:
                 state = states.pop(0)
-                if self._is_two_party(efsm, [state], role, visited):
+                if self._is_two_party(efsm, [state], role, visited) and not self._is_terminal_or_visited(efsm,[state], visited):
                     new_states.append(state)
-                else:
+                elif not self._is_terminal_or_visited(efsm, [state], visited):
                     visited.add(state.id)
                     actions = list(state.actions)
                     for action in actions:
                         new_states.append(action.succ)
+            # if old_states ==  set([state.id for state in new_states]):
+            #     print("hhello")
+            #     for state in new_states:
+            #         if self._is_two_party(efsm, [state], role, visited) and not state.id in visited and not efsm.is_terminal_state(state):
+            #             print(state)
+            #             states.append(state)
+            # else:
             states = new_states
         return states
 

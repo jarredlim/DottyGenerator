@@ -1,3 +1,5 @@
+module PingPong;
+
 global protocol PingPong(role Client, role Svr) {
 
     PING(number) from Client to Svr;

@@ -1,0 +1,106 @@
+module Hard;
+
+global protocol Hard(role C, role S, role P)
+{
+    HELLO(u:number) from C to S;
+    choice at S
+    {
+      ADD(w:number) from S to C;
+      choice at P
+      {
+        Test1() from P to S;
+        choice at S
+        {
+          NNN() from S to C;
+          NUN() from P to S;
+        }
+        or
+        {
+          YYY() from S to C;
+          NUN() from P to S;
+        }
+      }
+      or
+      {
+       Test2() from P to S;
+       choice at S
+        {
+          AAA() from S to C;
+          MAM() from P to S;
+        }
+        or
+        {
+          BBB() from S to C;
+          MAM() from P to S;
+        }
+      }
+    }
+    or
+    {
+      BYE() from S to C;
+      choice at C
+      {
+       HHH() from C to S;
+       choice at P
+      {
+        Test1() from P to S;
+        choice at S
+        {
+          CCC() from S to C;
+          NUN() from P to S;
+        }
+        or
+        {
+          DDD() from S to C;
+          NUN() from P to S;
+        }
+      }
+      or
+      {
+       Test2() from P to S;
+       choice at S
+        {
+          EEE() from S to C;
+          MAM() from P to S;
+        }
+        or
+        {
+          FFF() from S to C;
+          MAM() from P to S;
+        }
+      }
+      }
+      or
+      {
+       JJJ() from C to S;
+       choice at P
+      {
+        Test1() from P to S;
+        choice at S
+        {
+          CACAC() from S to C;
+          NUN() from P to S;
+        }
+        or
+        {
+          DADAD() from S to C;
+          NUN() from P to S;
+        }
+      }
+      or
+      {
+       Test2() from P to S;
+       choice at S
+        {
+          EAEAE() from S to C;
+          MAM() from P to S;
+        }
+        or
+        {
+          FAFAF() from S to C;
+          MAM() from P to S;
+        }
+      }
+      }
+    }
+}

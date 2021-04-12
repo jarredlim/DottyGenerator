@@ -2,24 +2,24 @@ module Buyers;
 
 global protocol Buyers(role A, role B, role S)
 {
-  empty1(number) from A to S;
-  empty2(number) from S to A;
-  empty3(number) from S to B;
-  empty4(number) from A to B;
+  empty1() from A to S;
+  empty2() from S to A;
+  empty3() from S to B;
+  empty4() from A to B;
 
   choice at B
   {
-    ok(number) from B to A;
-    ok(number) from B to S;
-    empty5(number) from S to B;
+    ok() from B to A;
+    ok() from B to S;
+    empty5() from S to B;
     choice at S
     {
-      empty1(number) from S to A;
-      empty2(number) from B to A;
+      empty1() from S to A;
+      empty2() from B to A;
       choice at A
       {
-         empty3(number) from A to B;
-         empty4(number) from B to A;
+         empty3(int) from A to B;
+         empty4() from B to A;
       }
       or
       {
@@ -28,7 +28,7 @@ global protocol Buyers(role A, role B, role S)
     }
     or
     {
-      empty2(number) from S to A;
+      empty2() from S to A;
     }
   }
   or

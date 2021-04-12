@@ -23,7 +23,7 @@ def _build_test_case(*,
                 os.remove(parent_output)
 
         def test_code_generation(self):
-            flags = [os.path.join(TEST_DIR, 'examples', filename), protocol,parent_output,"test" ]
+            flags = [os.path.join(TEST_DIR, 'examples', filename), protocol ]
 
             phase = 'Run codegen'
             exit_code = run_codegen(flags)
@@ -34,8 +34,8 @@ def _build_test_case(*,
 
             self.assertEqual(exit_code, 0)
 
-            phase = 'Check generated Effpi type'
-            completion = subprocess.run(f"sbt 'tests/runMain effpi_sandbox.test.Main'", shell=True, stdout=subprocess.PIPE,
+            phase = 'Check generated Effpi code'
+            completion = subprocess.run(f"sbt 'tests/runMain effpi_sandbox.{protocol}.Main'", shell=True, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE)
 
             exit_code = completion.returncode

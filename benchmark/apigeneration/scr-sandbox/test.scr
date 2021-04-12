@@ -2,55 +2,90 @@ module Test;
 
 global protocol Test(role Client, role Svr) {
 
-    rec Loop8 {  choice at Svr { 
- HELLO29(string, string, string, string, number, string) from Svr to Client; 
+    rec Loop13 {  choice at Svr { 
+ HELLO93(string) from Svr to Client; 
+ 
+ continue Loop13; 
+ } or { 
+ HELLO77(number, string, string, number, number, string, string, string, string) from Svr to Client; 
+ rec Loop12 {  choice at Client { 
+ HELLO6(number, number, number, number, number, string, number) from Client to Svr; 
+ 
+ continue Loop12; 
+ } or { 
+ HELLO95(string, number) from Client to Svr; 
+ rec Loop11 {  choice at Client { 
+ HELLO92(number, number, number, number, number, string, string) from Client to Svr; 
+ 
+ continue Loop11; 
+ } or { 
+ HELLO86(number, string) from Client to Svr; 
+ rec Loop10 {  choice at Svr { 
+ HELLO15(number) from Svr to Client; 
+ 
+ continue Loop10; 
+ } or { 
+ HELLO10(string, string, string, string, string, string, string, string, number) from Svr to Client; 
+ rec Loop9 {  choice at Svr { 
+ HELLO1(number, string) from Svr to Client; 
+ 
+ continue Loop9; 
+ } or { 
+ HELLO40(number, number, number) from Svr to Client; 
+ rec Loop8 {  choice at Svr { 
+ HELLO39(number, number, number) from Svr to Client; 
  
  continue Loop8; 
  } or { 
- HELLO19(string, number) from Svr to Client; 
+ HELLO95(string, string, string, string, string, string) from Svr to Client; 
  rec Loop7 {  choice at Client { 
- HELLO83(string) from Client to Svr; 
+ HELLO24(number, string, number, string, number) from Client to Svr; 
  
  continue Loop7; 
  } or { 
- HELLO90(string, number, number, string, string, string, string, string, number) from Client to Svr; 
+ HELLO55(string, number, number) from Client to Svr; 
  rec Loop6 {  choice at Svr { 
- HELLO50(string, number, string, number, number, string, string, string, number) from Svr to Client; 
+ HELLO69(string, string, string, number, string, string, number, number, string) from Svr to Client; 
  
  continue Loop6; 
  } or { 
- HELLO48(number) from Svr to Client; 
- rec Loop5 {  choice at Client { 
- HELLO72(string, number, number, number, string, string) from Client to Svr; 
+ HELLO55(string, number, number, number) from Svr to Client; 
+ rec Loop5 {  choice at Svr { 
+ HELLO75(number, number, number, number, string, string, number, string) from Svr to Client; 
  
  continue Loop5; 
  } or { 
- HELLO79(string, string, number, string, string, string, number, string) from Client to Svr; 
- rec Loop4 {  choice at Client { 
- HELLO83(string, number, string, number, string, number, string, string) from Client to Svr; 
+ HELLO58(number, string, number, string, number, number) from Svr to Client; 
+ rec Loop4 {  choice at Svr { 
+ HELLO20(string, number, number, string) from Svr to Client; 
  
  continue Loop4; 
  } or { 
- HELLO7(number, number, number, number, number) from Client to Svr; 
- rec Loop3 {  choice at Client { 
- HELLO4(string, string) from Client to Svr; 
+ HELLO4(number, string, number, string, number, number, string, number, number) from Svr to Client; 
+ rec Loop3 {  choice at Svr { 
+ HELLO87(number, string, number, string, string) from Svr to Client; 
  
  continue Loop3; 
  } or { 
- HELLO17(number) from Client to Svr; 
- rec Loop2 {  choice at Client { 
- HELLO35(number, number, string, string, number) from Client to Svr; 
+ HELLO48(number, string) from Svr to Client; 
+ rec Loop2 {  choice at Svr { 
+ HELLO32(string, number) from Svr to Client; 
  
  continue Loop2; 
  } or { 
- HELLO78(number, number, string, string) from Client to Svr; 
- rec Loop1 {  choice at Svr { 
- HELLO79(string, number, string) from Svr to Client; 
+ HELLO86(string, number, string, number, number, string, string, string) from Svr to Client; 
+ rec Loop1 {  choice at Client { 
+ HELLO84(number, string, string) from Client to Svr; 
  
  continue Loop1; 
  } or { 
- HELLO60(number, string, number, number, number, string, string, string) from Svr to Client; 
+ HELLO67(string, string, number, number, string, string, number, number) from Client to Svr; 
   
+ } } 
+ } } 
+ } } 
+ } } 
+ } } 
  } } 
  } } 
  } } 

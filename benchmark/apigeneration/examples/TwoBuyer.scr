@@ -1,12 +1,12 @@
 module TwoBuyer;
 
 global protocol TwoBuyer(role A, role B, role S) {
-    bookId(id: number) from A to S;
-    quoteA(x: number) from S to A;
-    quoteB(y: number) from S to B;
-    proposeA(a: number) from A to B;
+    bookId(id: Int) from A to S;
+    quoteA(x: Int) from S to A;
+    quoteB(y: Int) from S to B;
+    proposeA(a: Int) from A to B;
     choice at B {
-        ok(b: number) from B to A; 
+        ok(b: Int) from B to A;
         buy() from A to S;
     } or {
         no() from B to A;

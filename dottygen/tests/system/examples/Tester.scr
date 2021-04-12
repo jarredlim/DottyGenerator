@@ -1,0 +1,31 @@
+module Tester;
+
+
+global protocol Tester(role C, role S, role P)
+{
+    HELLO(u:Int) from C to S;
+    choice at C
+    {
+      ADD(w:Int) from C to S;
+      choice at P
+      {
+        Test1() from P to S;
+      }
+      or
+      {
+       Test2() from P to S;
+      }
+    }
+    or
+    {
+      BYE() from C to S;
+      choice at P
+      {
+        Test1() from P to S;
+      }
+      or
+      {
+       Test2() from P to S;
+      }
+    }
+}

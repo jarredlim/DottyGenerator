@@ -1,0 +1,16 @@
+module Simple;
+
+global protocol Simple(role A, role B)
+{
+
+  choice at B
+  {
+    ok(Int) from B to A;
+    bye(Int) from A to B;
+  }
+  or
+  {
+    quit() from B to A;
+    hello(Int) from A to B;
+  }
+}
