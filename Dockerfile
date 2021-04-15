@@ -17,12 +17,22 @@ RUN ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime \
     opam \
     python3-pip \
     rsync \
-    scala \
     software-properties-common \
+    scala \
     sudo \
     unzip \
     vim \
+    wget \
   && rm -rf /var/lib/apt/lists/* /tmp/*
+
+#RUN apt-get remove scala-library scala \
+#    && wget http://scala-lang.org/files/archive/scala-2.12.1.deb \
+#    && dpkg -i scala-2.12.1.deb \
+#    && apt-get update \
+#    && apt -get install scala
+RUN apt-get -y remove scala-library scala \
+    && wget https://downloads.lightbend.com/scala/2.12.3/scala-2.12.3.deb \
+    && dpkg -i scala-2.12.3.deb
 
 RUN useradd dev \
   && echo "dev:dev" | chpasswd \
@@ -55,7 +65,7 @@ COPY --chown=dev:dev \
 
 # Setup Python
 RUN add-apt-repository -y ppa:deadsnakes/ppa \
-  && apt-get install python3.8 \
+  && apt-get -y install python3.8 \
   && echo python3.8 --version
 
 RUN python3.8 -m pip install -r /home/dev/dependencies/requirements.codegen.txt
@@ -68,10 +78,12 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh \
 ##############################################################################
 # effpi
 ##############################################################################
-RUN echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823 \
- && apt-get update \
- && apt-get install sbt -y
+
+RUN apt-get clean\
+ && echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list\
+ && curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add\
+ && apt-get update\
+ && apt-get install sbt
 
 
  COPY --chown=dev:dev \

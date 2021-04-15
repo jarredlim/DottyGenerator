@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 from dottygen.generator.types import Type
+from dottygen.generator.choices import FunctionLambda
 from dottygen.generator.utils import first_char_lower, get_labels_name
 
 class Channel(Type):
@@ -58,10 +59,25 @@ class OutChannel(Channel):
             return f"OutChannel[{self._nested_type}]"
         return f"OutChannel[{self.get_labels_name()}]"
 
-    def get_function_body(self, indentation, function_writer):
-        function_writer.add_print(f'Sending {self.get_labels_name()} through channel {first_char_lower(self.get_channel_name())}', indentation)
-        function_writer.write_line(f'send({first_char_lower(self.get_channel_name())},{self.labels[0].get_random_payload_value()}) >> {{', indentation)
-        self.continuation.get_function_body(indentation + 1, function_writer)
+    def get_function_body(self, indentation, function_writer, isWebsite, nestedChoice=False):
+        if isWebsite and not nestedChoice:
+            function_writer.add_print(f'Waiting to send {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}',
+                                      indentation)
+            function_writer.write_line(
+                f'displayMessage += \"Expecting to send {self.labels[0].get_name()}({self.labels[0].get_payload_string()}) through channel {first_char_lower(self._channel_name)}<br/>\"',
+                indentation)
+            function_writer.write_line(f'possibleMessage = Map({self.labels[0].get_payload_list_string()})', indentation)
+            function_writer.write_line("canRelease = true", indentation)
+            function_writer.write_line("semaphore.acquire", indentation)
+
+        function_writer.add_print(f'Sending {self.get_labels_name()} through channel {first_char_lower(self.get_channel_name())}',
+                indentation)
+        if isWebsite:
+            function_writer.write_line(f'send({first_char_lower(self.get_channel_name())},{self.labels[0].get_payload_assign_string()}) >> {{',
+                    indentation)
+        else:
+            function_writer.write_line(f'send({first_char_lower(self.get_channel_name())},{self.labels[0].get_random_payload_value()}) >> {{', indentation)
+        self.continuation.get_function_body(indentation + 1, function_writer, isWebsite)
         function_writer.write_line(f'}}', indentation)
 
 
@@ -70,7 +86,7 @@ class TypeMatchChannel(Channel):
     def get_type(self) -> str:
         return self.get_channel_name()
 
-    def get_function_body(self,indentation, function_writer):
+    def get_function_body(self,indentation, function_writer, isWebsite):
         function_writer.writeline(first_char_lower(self.get_channel_name()), indentation)
 
     def get_channel_type(self):
@@ -92,11 +108,18 @@ class InChannel(Channel):
     def get_channel_type(self):
         return f"InChannel[{self.get_labels_name()}]"
 
-    def get_function_body(self, indentation, function_writer):
+    def get_function_body(self, indentation, function_writer, isWebsite):
         function_writer.write_line(f'receive({first_char_lower(self._channel_name)}) {{', indentation)
         function_writer.write_line(f'({first_char_lower(self.param)}:{self.get_labels_name()}) =>', indentation+1)
+        if isWebsite:
+            if isinstance(self.continuation, FunctionLambda):
+                function_writer.write_line(f"displayMessage += s\"Receiving type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}<br/>\"", indentation+1)
+            else:
+                function_writer.write_line(
+                    f"displayMessage += s\"Received {self.labels[0].get_name()}({self.labels[0].get_payload_receive(first_char_lower(self.param))})"
+                    f"through channel {first_char_lower(self._channel_name)}<br/>\"", indentation+1)
         function_writer.add_print(f'Receive type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}', indentation+1)
-        self.continuation.get_function_body(indentation + 1, function_writer)
+        self.continuation.get_function_body(indentation + 1, function_writer, isWebsite)
         function_writer.write_line(f'}}', indentation)
 
 

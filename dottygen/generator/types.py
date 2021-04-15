@@ -9,7 +9,7 @@ class Type(ABC):
         raise NotImplementedError('Action.add_to_efsm')
 
     @abstractmethod
-    def get_function_body(self, indentation, file_writer):
+    def get_function_body(self, indentation, file_writer, isWebsite):
         raise NotImplementedError('Action.add_to_efsm')
 
     @abstractmethod
@@ -43,6 +43,37 @@ class Label():
             return "Int"
         return type
 
+    def get_payload_list_string(self):
+        output = f"\"{self._name}\" -> List("
+        for i in range(len(self._payload)):
+            if ":" in self._payload[i]:
+                index = self._payload[i].index(":") + 1
+                payload_type = self._convert_payload_type(self._payload[i][index:])
+            else:
+                payload_type = self._convert_payload_type(self._payload[i])
+            output += f"\"{payload_type}\""
+            if i != len(self._payload) - 1:
+                output += ","
+        return output + ")"
+
+
+    def get_payload_assign_string(self):
+        output = f"{self._name}("
+        for i in range(len(self._payload)):
+            if ":" in self._payload[i]:
+                index = self._payload[i].index(":") + 1
+                payload_type = self._convert_payload_type(self._payload[i][index:])
+            else:
+                payload_type = self._convert_payload_type(self._payload[i])
+
+            output += f"payloads({i})"
+            if payload_type == "Int":
+                output += ".toInt"
+
+            if i != len(self._payload) - 1:
+                output += ","
+        return output + ")"
+
     def get_random_payload_value(self):
         output = f"{self._name}("
         for i in range(len(self._payload)):
@@ -73,3 +104,15 @@ class Label():
                 payload_string += ","
         return payload_string
 
+    def get_payload_receive(self, match_var):
+        payload_string = ""
+        for i in range(len(self._payload)):
+            if ":" in self._payload[i]:
+                index = self._payload[i].index(":")
+                payload_var = self._payload[i][:index]
+            else:
+                payload_var =  f"x{i+1}:"
+            payload_string += f"{payload_var}=${{{match_var}.{payload_var}}}"
+            if i != len(self._payload) - 1:
+                payload_string += ","
+        return payload_string

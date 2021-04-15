@@ -2,97 +2,104 @@ module Test;
 
 global protocol Test(role Client, role Svr) {
 
-    rec Loop13 {  choice at Svr { 
- HELLO93(string) from Svr to Client; 
- 
- continue Loop13; 
- } or { 
- HELLO77(number, string, string, number, number, string, string, string, string) from Svr to Client; 
- rec Loop12 {  choice at Client { 
- HELLO6(number, number, number, number, number, string, number) from Client to Svr; 
- 
- continue Loop12; 
- } or { 
- HELLO95(string, number) from Client to Svr; 
- rec Loop11 {  choice at Client { 
- HELLO92(number, number, number, number, number, string, string) from Client to Svr; 
- 
- continue Loop11; 
- } or { 
- HELLO86(number, string) from Client to Svr; 
- rec Loop10 {  choice at Svr { 
- HELLO15(number) from Svr to Client; 
- 
- continue Loop10; 
- } or { 
- HELLO10(string, string, string, string, string, string, string, string, number) from Svr to Client; 
- rec Loop9 {  choice at Svr { 
- HELLO1(number, string) from Svr to Client; 
- 
- continue Loop9; 
- } or { 
- HELLO40(number, number, number) from Svr to Client; 
- rec Loop8 {  choice at Svr { 
- HELLO39(number, number, number) from Svr to Client; 
- 
- continue Loop8; 
- } or { 
- HELLO95(string, string, string, string, string, string) from Svr to Client; 
- rec Loop7 {  choice at Client { 
- HELLO24(number, string, number, string, number) from Client to Svr; 
- 
- continue Loop7; 
- } or { 
- HELLO55(string, number, number) from Client to Svr; 
- rec Loop6 {  choice at Svr { 
- HELLO69(string, string, string, number, string, string, number, number, string) from Svr to Client; 
- 
- continue Loop6; 
- } or { 
- HELLO55(string, number, number, number) from Svr to Client; 
- rec Loop5 {  choice at Svr { 
- HELLO75(number, number, number, number, string, string, number, string) from Svr to Client; 
- 
- continue Loop5; 
- } or { 
- HELLO58(number, string, number, string, number, number) from Svr to Client; 
- rec Loop4 {  choice at Svr { 
- HELLO20(string, number, number, string) from Svr to Client; 
- 
- continue Loop4; 
- } or { 
- HELLO4(number, string, number, string, number, number, string, number, number) from Svr to Client; 
- rec Loop3 {  choice at Svr { 
- HELLO87(number, string, number, string, string) from Svr to Client; 
- 
- continue Loop3; 
- } or { 
- HELLO48(number, string) from Svr to Client; 
- rec Loop2 {  choice at Svr { 
- HELLO32(string, number) from Svr to Client; 
- 
- continue Loop2; 
- } or { 
- HELLO86(string, number, string, number, number, string, string, string) from Svr to Client; 
- rec Loop1 {  choice at Client { 
- HELLO84(number, string, string) from Client to Svr; 
- 
- continue Loop1; 
- } or { 
- HELLO67(string, string, number, number, string, string, number, number) from Client to Svr; 
-  
- } } 
- } } 
- } } 
- } } 
- } } 
- } } 
- } } 
- } } 
- } } 
- } } 
- } } 
- } } 
- } }
+    HELLO22(string, number, string, string, string, string, number, string) from Svr to Client; 
+HELLO31(number, string, number, number, string, number, string, string, number) from Client to Svr; 
+HELLO79(number) from Svr to Client; 
+HELLO59(string, string, string, string, string, number, number) from Client to Svr; 
+HELLO21(number, number, number, string) from Svr to Client; 
+HELLO27(string, string, string, number, string) from Svr to Client; 
+HELLO56(number, number, number, number) from Client to Svr; 
+HELLO83(number, number, number, number, number) from Svr to Client; 
+HELLO16(string, string, string, string, number, number) from Svr to Client; 
+HELLO46(string, number, number) from Svr to Client; 
+HELLO74(number, number) from Svr to Client; 
+HELLO3(number) from Svr to Client; 
+HELLO99(number) from Client to Svr; 
+HELLO55(number, number, number, number, string, string, string, number, string) from Svr to Client; 
+HELLO93(number, number, string, string, string, string, number, number) from Client to Svr; 
+HELLO36(string, string) from Client to Svr; 
+HELLO25(string, number) from Svr to Client; 
+HELLO6(string, number) from Client to Svr; 
+HELLO14(number, number, number, number, string, number) from Client to Svr; 
+HELLO60(string, string, number, number, number, number, string, string) from Client to Svr; 
+HELLO72(string, string, string) from Client to Svr; 
+HELLO28(string, string, number, string, string, number, string) from Client to Svr; 
+HELLO90(string, string, string, string, string) from Svr to Client; 
+HELLO11(number, string, number, string, string, string, number) from Svr to Client; 
+HELLO95(string, number) from Client to Svr; 
+HELLO46(number) from Svr to Client; 
+HELLO83(number, string, number, number, string) from Client to Svr; 
+HELLO74(string, number, number, string, string, string, number, number, string) from Svr to Client; 
+HELLO13(number, number, string, number, number, number, string, string, string) from Client to Svr; 
+HELLO94(string, string, number, number, string, string) from Client to Svr; 
+HELLO44(number, number, number, number, number, string) from Client to Svr; 
+HELLO53(string, number, string, string, string, string, string, number, number) from Svr to Client; 
+HELLO70(number, number, number) from Svr to Client; 
+HELLO1(number, number, number, number, string) from Client to Svr; 
+HELLO19(string) from Client to Svr; 
+HELLO58(string) from Svr to Client; 
+HELLO25(number, number, number, number) from Svr to Client; 
+HELLO77(string, number, number, number, number, string, number) from Client to Svr; 
+HELLO67(number, string, number, number, string, string, string) from Svr to Client; 
+HELLO13(string, string, number, string) from Svr to Client; 
+HELLO13(string, string, string, string, string, number, number, string, number) from Svr to Client; 
+HELLO79(string) from Client to Svr; 
+HELLO18(string, string, string, string, number, number, string) from Client to Svr; 
+HELLO34(number) from Svr to Client; 
+HELLO20(string, number, number, number, number, string, number, string) from Client to Svr; 
+HELLO85(string, number, string, number) from Client to Svr; 
+HELLO80(number, number, string, string, string, number, number, number, string) from Svr to Client; 
+HELLO31(number, string, number, number, string) from Client to Svr; 
+HELLO10(string, string) from Client to Svr; 
+HELLO2(string) from Client to Svr; 
+HELLO47(number, string, number, number, string, string, string) from Svr to Client; 
+HELLO32(string, string, string, number) from Client to Svr; 
+HELLO18(string, string) from Svr to Client; 
+HELLO67(number, string, number, string, number, number, number, string) from Client to Svr; 
+HELLO28(string, string) from Client to Svr; 
+HELLO38(number) from Client to Svr; 
+HELLO94(number, number, string, number, string, number, number, number) from Svr to Client; 
+HELLO10(number, number, string, number) from Svr to Client; 
+HELLO57(number, number) from Client to Svr; 
+HELLO98(number, string, number, string, number, string, number, string) from Client to Svr; 
+HELLO26(string, string, string, string, number) from Svr to Client; 
+HELLO86(string, string, number) from Client to Svr; 
+HELLO43(number) from Client to Svr; 
+HELLO63(string, number) from Svr to Client; 
+HELLO4(number, string, string, number, string, string, number, string) from Svr to Client; 
+HELLO43(number, string, number) from Client to Svr; 
+HELLO16(number, number, string, number, string, string, number) from Client to Svr; 
+HELLO36(string, string, number, string, number, string, string, string) from Svr to Client; 
+HELLO49(number, string, number, number, string, string, number, number) from Client to Svr; 
+HELLO24(string, string, string, number, string, number, number, number) from Client to Svr; 
+HELLO26(string) from Client to Svr; 
+HELLO30(number, number, number) from Svr to Client; 
+HELLO85(string, string, string, number, number, string) from Svr to Client; 
+HELLO47(number, string, number) from Client to Svr; 
+HELLO46(number, number) from Client to Svr; 
+HELLO3(number, number, string, number, number, string, string, string) from Client to Svr; 
+HELLO12(string, string, string) from Svr to Client; 
+HELLO51(number, string, string, number, number, number, number) from Svr to Client; 
+HELLO12(number, string) from Client to Svr; 
+HELLO53(string, string, number, string, string, number, number) from Client to Svr; 
+HELLO42(string) from Client to Svr; 
+HELLO66(number, string, number, string, string, string, string) from Svr to Client; 
+HELLO95(string, string, string, number, string, number, number, number, number) from Svr to Client; 
+HELLO78(string, number) from Client to Svr; 
+HELLO10(string, number, string, number, number, string, number, string) from Svr to Client; 
+HELLO9(number, string, number, string, string, number, number, string, string) from Client to Svr; 
+HELLO9(number, string, number, number) from Svr to Client; 
+HELLO99(string, number) from Svr to Client; 
+HELLO27(string, number, number, string, number, string, number, string) from Client to Svr; 
+HELLO4(number) from Svr to Client; 
+HELLO69(number, string, string, number, string) from Svr to Client; 
+HELLO21(string, string, number, number, number, string) from Svr to Client; 
+HELLO29(number, number, number, string, number, string) from Client to Svr; 
+HELLO21(number) from Client to Svr; 
+HELLO14(string, number, number, string, string, number, number, string) from Svr to Client; 
+HELLO18(number, number, string, string, string, number, string, string, string) from Client to Svr; 
+HELLO53(string) from Svr to Client; 
+HELLO13(string, string, string) from Client to Svr; 
+
 
 }

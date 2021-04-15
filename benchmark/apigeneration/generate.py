@@ -50,7 +50,7 @@ def generate_api_test(test_name):
 
     for i in range(1, max_range):
         counter = Counter()
-        for k in range(10):
+        for k in range(50):
             protocol = ""
             for j in range(1, i):
 
@@ -108,8 +108,8 @@ def plot_graph(x, function_time, type_time, nuscr_time, efsm_time, class_time, m
     for i in range(len(efsm_time)):
         efsm_time[i] += nuscr_time[i]
 
-    plt.plot(x, efsm_time, label="EFSM + nuscr Generation")
-    plt.plot(x, function_time, label="Other Generations")
+    # plt.plot(x, efsm_time, label="EFSM + nuscr Generation")
+    # plt.plot(x, function_time, label="Other Generations")
 
     if test_name == "loop":
         test_type = "Loops"
@@ -118,14 +118,14 @@ def plot_graph(x, function_time, type_time, nuscr_time, efsm_time, class_time, m
     else:
         test_type = "Send/Receives"
     #
-    # plt.plot(x, function_time, label="Function Generation")
-    # plt.plot(x, type_time, label="Type Generation")
-    # # plt.plot(x, nuscr_time, label="Nuscr Generation")
-    # # plt.plot(x, efsm_time, label="EFSM Generation")
-    # plt.plot(x, class_time, label="Class Generation")
-    # plt.plot(x, merge_time, label="Merging")
-    # plt.xlabel(f'Number of {test_type}')
-    # plt.ylabel('Time taken (s)')
+    plt.plot(x, function_time, label="Function Generation")
+    plt.plot(x, type_time, label="Type Generation")
+    # plt.plot(x, nuscr_time, label="Nuscr Generation")
+    # plt.plot(x, efsm_time, label="EFSM Generation")
+    plt.plot(x, class_time, label="Class Generation")
+    plt.plot(x, merge_time, label="Merging")
+    plt.xlabel(f'Number of {test_type}')
+    plt.ylabel('Time taken (s)')
     plt.title(f'Multiple {test_type} with Two Participants')
     plt.legend()
     plt.savefig(f"benchmark/apigeneration/graphs/test_{test_name}.png")

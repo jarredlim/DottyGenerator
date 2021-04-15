@@ -9,6 +9,6 @@ import scala.concurrent.duration.Duration
 import effpi.recurse._
 import java.util.Date
 
-implicit val timeout: Duration = Duration("60 seconds")
+implicit val timeout: Duration = Duration("TIMEOUT seconds")
 
 IMPLEMENTATIONS

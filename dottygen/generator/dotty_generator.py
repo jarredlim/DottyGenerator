@@ -16,7 +16,7 @@ class DottyGenerator:
     _other_roles: typing.Iterable[str]
     _channel_count: typing.Dict[str, int]
 
-    def __init__(self, efsm : EFSM, protocol : str, role: str, other_roles: typing.Iterable[str], recurse_generator):
+    def __init__(self, efsm : EFSM, protocol : str, role: str, other_roles: typing.Iterable[str], recurse_generator, isWebsite, host):
         self._efsm = efsm
         self._protocol = protocol
         self._role = role
@@ -26,6 +26,8 @@ class DottyGenerator:
         self._labels = set()
         self._function_count = 1
         self._recurse_generator = recurse_generator
+        self._isWebsite = isWebsite
+        self._host = host
 
     def _build_helper(self, state, visited):
         efsm = self._efsm
@@ -130,7 +132,7 @@ class DottyGenerator:
     def generate_functions(self):
         function_writer = FunctionWriter(self._role)
         for function in self._function_list:
-            function.get_function_body(1, function_writer)
+            function.get_function_body(1, function_writer, self._isWebsite, self._host)
             function_writer.add_empty_line(2)
         return function_writer.get_output()
 

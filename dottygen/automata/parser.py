@@ -13,11 +13,7 @@ def from_file(path: str) -> EFSM:
 
 def from_data(data: str) -> EFSM:
     """Parse EFSM reprsentation from the specified string 'data'."""
-    print(data)
-    start = time.time()
     graph = pydot.graph_from_dot_data(data)[0]
-    end = time.time()
-    print(end-start)
     return _parse_graph(graph)
 
 

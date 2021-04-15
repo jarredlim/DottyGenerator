@@ -1,6 +1,9 @@
 def first_char_lower(input):
     return input[0].lower() + input[1:]
 
+def first_char_upper(input):
+    return input[0].upper() + input[1:]
+
 def get_labels_name(labels):
         label_name = ""
         for i in range(len(labels)):

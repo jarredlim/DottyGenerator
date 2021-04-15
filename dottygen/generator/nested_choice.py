@@ -31,7 +31,7 @@ class NestedFunctionLambda(Type):
     def get_continuation(self):
         return []
 
-    def get_function_body(self, indentation, file_writer):
+    def get_function_body(self, indentation, file_writer, isWebsite):
         pass
 
 def generate_sealed_class(type):

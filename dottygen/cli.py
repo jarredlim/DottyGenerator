@@ -29,6 +29,8 @@ def parse_arguments(args: typing.List[str]) -> typing.Dict:
 
     parser.add_argument('--single', help='output as a single file', action='store_true')
 
+    parser.add_argument("--website", nargs='*', default=None)
+
     parsed_args = parser.parse_args(args)
     return vars(parsed_args)
 
@@ -42,20 +44,37 @@ def main(args: typing.List[str]) -> int:
     output_folder = parsed_args['output']
     scribble_file = parsed_args['filename']
     batch = not parsed_args['single']
+    website_roles = parsed_args['website']
 
-    return generate(batch, output_folder, protocol, scribble_file)
+    return generate(batch, output_folder, protocol, scribble_file, website_roles)
 
 
-def generate(batch, output_folder, protocol, scribble_file, counter=Counter(), line_counter=LineCounter()):
+def generate(batch, output_folder, protocol, scribble_file, website, counter=Counter(), line_counter=LineCounter()):
     labels = set()
     channel_list = []
     efsms = {}
     all_roles = role_parser.parse(scribble_file, protocol)
+    hosts =["8080", "8888", "3000", "5000"]
 
     recurse_generator = RecurseTypeGenerator()
     recurse_generator.setup()
 
     output_generator = OutputGenerator()
+    isWebsite = not website is None
+    if isWebsite:
+        assert (all(role in all_roles for role in website))
+        if len(website) == 0:
+            website = all_roles
+    else:
+        website = []
+
+    host_map = {}
+    i = 0
+    for role in website:
+        host_map[role] = hosts[i]
+        i += 1
+
+    assert(not isWebsite or batch)
 
     for role in all_roles:
         counter.set_role(role)
@@ -101,7 +120,7 @@ def generate(batch, output_folder, protocol, scribble_file, counter=Counter(), l
         try:
             other_roles = all_roles - set(role)
             generator = DottyGenerator(efsm=efsm, protocol=protocol, role=role, other_roles=other_roles,
-                                       recurse_generator=recurse_generator)
+                                       recurse_generator=recurse_generator, isWebsite=(isWebsite and role in website), host=host_map.get(role, ""))
             type, function, label, channels = generator.build(counter)
             output_generator.add_type(role, type)
             output_generator.add_function(role, function)
@@ -127,7 +146,7 @@ def generate(batch, output_folder, protocol, scribble_file, counter=Counter(), l
         if not batch:
             output_generator.single_output(output_folder, case_classes, channels_assign, protocol)
         else:
-            output_generator.batch_output(output_folder, case_classes, channels_assign, protocol, all_roles)
+            output_generator.batch_output(output_folder, case_classes, channels_assign, protocol, all_roles, isWebsite, host_map)
     except (OSError, ValueError) as error:
         logger.FAIL(phase)
         logger.ERROR(error)
