@@ -85,6 +85,7 @@ class OutputGenerator:
         with open(output_file, "w") as f:
             f.write(newText)
 
-        output_file = os.path.join(output_folder, 'Http.scala')
-        shutil.copyfile(http_template_path, output_file)
+        if isWebsite:
+            output_file = os.path.join(output_folder, 'Http.scala')
+            shutil.copyfile(http_template_path, output_file)
 
