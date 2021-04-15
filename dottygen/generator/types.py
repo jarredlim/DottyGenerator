@@ -111,7 +111,7 @@ class Label():
                 index = self._payload[i].index(":")
                 payload_var = self._payload[i][:index]
             else:
-                payload_var =  f"x{i+1}:"
+                payload_var =  f"x{i+1}"
             payload_string += f"{payload_var}=${{{match_var}.{payload_var}}}"
             if i != len(self._payload) - 1:
                 payload_string += ","

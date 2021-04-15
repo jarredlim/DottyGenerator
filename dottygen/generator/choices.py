@@ -52,7 +52,7 @@ class Selection(Type):
                 function_writer.write_line(f"else{{", indentation)
             else:
                 if isWebsite:
-                    function_writer.write_line(f"else if( chocie == {labels[i].get_name()}){{\n", indentation)
+                    function_writer.write_line(f"else if( choice == \"{labels[i].get_name()}\"){{\n", indentation)
                 else:
                     function_writer.write_line(f"else if(decision == {i}){{\n", indentation)
             self._output_channels[i].get_function_body(indentation + 1, function_writer, isWebsite, isWebsite)
