@@ -4,13 +4,11 @@ from re import sub
 import subprocess
 import typing
 
-_NUSCR = 'nuscr'
-
 def get_graph(filename: str, protocol: str, role: str) -> typing.Tuple[int, str]:
     """Get dot representation of EFSM from Scribble-Java.
     Return exit code and command line output."""
-    _role_protocol = f"{role}@{protocol}"
-    command = (_NUSCR,'-fsm', _role_protocol, filename)
+    _role_protocol = f"--fsm={role}@{protocol}"
+    command = ('dune','exec','nuscr','--', _role_protocol, filename)
 
     completion = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     exit_code = completion.returncode

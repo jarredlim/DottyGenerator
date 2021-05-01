@@ -1,0 +1,50 @@
+module Adder;
+
+global protocol Adder(role Client, role Svr, role A) {
+
+    choice at Client {
+        ADD(number, number)   from Client to Svr;
+        Bla() from Client to A;
+        choice at Client {
+        ADD(number, number)   from Client to Svr;
+        Bla() from Client to A;
+
+    } or {
+        QUIT()                from Client to Svr;
+        Bli() from Client to A;
+    } or {
+        Hello() from Client to Svr;
+        Blo() from Client to A;
+    }
+
+    } or {
+        QUIT()                from Client to Svr;
+        Bli() from Client to A;
+        choice at Client {
+        ADD(number, number)   from Client to Svr;
+        Bla() from Client to A;
+
+    } or {
+        QUIT()                from Client to Svr;
+        Bli() from Client to A;
+    } or {
+        Hello() from Client to Svr;
+        Blo() from Client to A;
+    }
+    } or {
+        Hello() from Client to Svr;
+        Blo() from Client to A;
+        choice at Client {
+        ADD(number, number)   from Client to Svr;
+        Bla() from Client to A;
+
+    } or {
+        QUIT()                from Client to Svr;
+        Bli() from Client to A;
+    } or {
+        Hello() from Client to Svr;
+        Blo() from Client to A;
+    }
+    }
+
+}

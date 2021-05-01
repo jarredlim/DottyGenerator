@@ -1,0 +1,26 @@
+module ArtSeller;
+
+global protocol ArtSeller(role B1, role Svr, role B2) {
+
+    START(basePrice:number) from Svr to B1;
+    START(basePrice:number) from Svr to B2;
+    do Bidder(B1, Svr, B2);
+}
+
+aux global protocol Bidder(role B1, role Svr, role B2) {
+
+     choice at B1{
+         OFFER(price: number) from B1 to Svr;
+         choice at Svr{
+           BID(currPrice : number) from Svr to B2;
+           BID(currPrice : number ) from Svr to B1;
+           do Bidder(B2, Svr, B1);
+         }or{
+           CANCEL() from Svr to B2;
+           CONFIRM(price:number) from Svr to B1;
+         }
+     } or {
+         CANCEL() from B1 to Svr;
+         CONFIRM(price:number) from Svr to B2;
+     }
+}

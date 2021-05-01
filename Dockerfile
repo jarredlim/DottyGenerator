@@ -51,10 +51,14 @@ ENV OPAMROOT=/home/dev/.opam
 
 env opam_env="opam config env --root=${OPAMROOT}"
 
+COPY --chown=dev:dev \
+  nuscr /home/dev/nuscr/
+
 RUN opam init --root ${OPAMROOT} --disable-sandboxing -y \
 && eval `${opam_env}` \
-&& opam install -y nuscr \
+&& opam install -dt /home/dev/nuscr/nuscr.opam --deps-only -y \
 && eval `${opam_env}`
+
 
 ##############################################################################
 # Codegen
@@ -124,7 +128,7 @@ COPY --chown=dev:dev \
 
 RUN chmod +x /home/dev/setup/*
 
-RUN echo 'alias python=python3.8 && eval $(opam env)' \
+RUN echo 'alias python=python3.8 && eval $(opam env) && dune exec nuscr -- > /dev/null 2>&1' \
     >> /home/dev/.bashrc
 
 RUN echo '[ ! -z "$TERM" -a -r /etc/welcome ] && ./setup/setup_scripts && cat /etc/welcome' \

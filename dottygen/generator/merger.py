@@ -1,3 +1,5 @@
+import copy
+
 class Merger():
 
     def __init__(self,efsms):
@@ -61,12 +63,12 @@ class Merger():
                 return i
         return -1
 
-    def _get_map_index(self, channel_map, states, new_chan_names, labels):
+    def _get_map_index(self, channel_map, states, combine_map, labels):
         for i in range(len(channel_map)):
             for state in states:
                 if state.has_channel_name and state.channel_name in channel_map[i][0]:
                     return i
-            for chan_name in new_chan_names:
+            for chan_name in list(combine_map.values()):
                 if chan_name in channel_map[i][0]:
                     return i
             if labels == channel_map[i][1] and len(labels) > 0:
@@ -76,17 +78,15 @@ class Merger():
     def _match_channels(self,states1, channel_list, efsm1, count, role1, role2):
 
         if len(states1) == 0:
-            return False, "null", count
+            return False, {}, count
 
         for state in states1:
             if efsm1.is_terminal_state(state):
-                return False, "null", count
-
-        labels_set = set([action.label for action in states1[0].actions])
+                return False, {}, count
 
         for state in states1:
-            if state.has_channel_name or set([action.label for action in state.actions]) != labels_set:
-                return False, "null", count
+            if state.has_channel_name:
+                return False, {}, count
 
         channel_type = ""
         if efsm1.is_send_state(states1[0]):
@@ -94,14 +94,36 @@ class Merger():
         elif efsm1.is_receive_state(states1[0]):
             channel_type = "IN"
 
-        for channel_name, type, labels in channel_list:
-            if type == channel_type and labels == labels_set:
-                return True, channel_name, count
+        old_labels_set = set()
+        for state in states1:
+            for action in state.actions:
+                old_labels_set.add(action.label)
 
-        channel_name = self._generate_channel_name(count, role1, role2)
-        channel_list.append((channel_name, channel_type, labels_set))
+        channel_map = {}
+        map_index = -1
 
-        return True, channel_name, count+1
+        for i in range(len(channel_list)):
+            (channel_name, type, labels) = channel_list[i]
+            if type == channel_type and labels == old_labels_set:
+                map_index = i
+                allSet1 = frozenset([frozenset([action.label for action in state.actions]) for state in states1])
+                allSet2 = frozenset(channel_name.keys())
+                if allSet1 == allSet2:
+                  return True, channel_name, count
+
+        if map_index != -1:
+            channel_name, _, _= channel_list.pop(map_index)
+            channel_map = channel_name
+
+        for state in states1:
+            labels_set = frozenset([action.label for action in state.actions])
+            if labels_set not in list(channel_map.keys()):
+                channel_name = self._generate_channel_name(count, role1, role2)
+                count+=1
+                channel_map[labels_set] = channel_name
+        channel_list.append((channel_map, channel_type, old_labels_set))
+
+        return True, channel_map, count
 
 
     def _merge_two_state(self,role1, role2, efsm1, efsm2, state1, state2, count12, count21, channel_map, visited1, visited2, channel_list1, channel_list2):
@@ -132,16 +154,19 @@ class Merger():
             for state in states1 + states2:
                 labels = labels.union(set([action.label for action in state.actions]))
 
+        combine_map = copy.deepcopy(new_chan_name1)
+        combine_map.update(new_chan_name2)
 
-        map_index = self._get_map_index(channel_map, states1 + states2, [new_chan_name1] + [new_chan_name2], labels)
+        map_index = self._get_map_index(channel_map, states1 + states2, combine_map, labels)
         channel_set = set()
         if map_index != -1:
             channel_set, labels = channel_map.pop(map_index)
 
         for state in states1:
             if has_matched1:
-                state.set_channel_name(new_chan_name1)
-                channel_set.add(new_chan_name1)
+                chan_name = new_chan_name1[frozenset([action.label for action in state.actions])]
+                state.set_channel_name(chan_name)
+                channel_set.add(chan_name)
             elif not efsm1.is_terminal_state(state) and not state.has_channel_name:
                 channel_name = self._generate_channel_name(count12, role1, role2)
                 channel_set.add(channel_name)
@@ -149,8 +174,9 @@ class Merger():
                 count12 += 1
         for state in states2:
             if has_matched2:
-                state.set_channel_name(new_chan_name2)
-                channel_set.add(new_chan_name2)
+                chan_name = new_chan_name2[frozenset([action.label for action in state.actions])]
+                state.set_channel_name(chan_name)
+                channel_set.add(chan_name)
             elif not efsm2.is_terminal_state(state) and not state.has_channel_name:
                 channel_name = self._generate_channel_name(count21, role2, role1)
                 channel_set.add(channel_name)

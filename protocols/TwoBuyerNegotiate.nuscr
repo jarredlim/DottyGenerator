@@ -12,8 +12,8 @@ global protocol TwoBuyer(role A, role B, role S)
      choice at A
      {
        BUY(address: string) from A to S;
-       CONFIRM(departure: date) from S to A;
-       CONFIRM(departure: date) from S to B;
+       CONFIRM() from S to A;
+       CONFIRM() from S to B;
      }
      or
      {

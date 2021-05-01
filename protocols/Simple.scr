@@ -1,17 +1,17 @@
 module Simple;
 
-global protocol Simple(role A, role B)
+global protocol Simple(role C, role S, role G)
 {
+  HELLO(u:Int) from C to S;
 
-  choice at B
+  choice at C
   {
-    ok(int) from B to A;
-    bye(int) from A to B;
+    ADD(y:Int) from C to S;
+    Hey() from C to G;
   }
   or
   {
-    quit() from B to A;
-    hello(int) from A to B;
+    BYE() from C to S;
+    Hey() from C to G;
   }
 }
-

@@ -178,6 +178,34 @@
                 "identifier": "Http"
             }
         ]
+    },{
+        "filename": "DoubleAdder.scr",
+        "protocols": [
+            {
+                "identifier": "Adder"
+            }
+        ]
+    },{
+        "filename": "TripleAdder.scr",
+        "protocols": [
+            {
+                "identifier": "Adder"
+            }
+        ]
+    },{
+        "filename": "AdderSub.scr",
+        "protocols": [
+            {
+                "identifier": "Adder"
+            }
+        ]
+    },{
+        "filename": "AdderUltimate.scr",
+        "protocols": [
+            {
+                "identifier": "Adder"
+            }
+        ]
     }
 ]
 }
