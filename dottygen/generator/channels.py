@@ -1,10 +1,9 @@
 from abc import abstractmethod
 
-from dottygen.generator.types import Type
-from dottygen.generator.choices import FunctionLambda
+from dottygen.generator.base import CommunicationBase
 from dottygen.generator.utils import first_char_lower, get_labels_name
 
-class Channel(Type):
+class Channel(CommunicationBase):
 
 
     def __init__(self, channel_name: str, labels, continuation="", sender="", receiver = "", is_nested=False, nested_type=None):
@@ -81,18 +80,6 @@ class OutChannel(Channel):
         function_writer.write_line(f'}}', indentation)
 
 
-class TypeMatchChannel(Channel):
-
-    def get_type(self) -> str:
-        return self.get_channel_name()
-
-    def get_function_body(self,indentation, function_writer, isWebsite):
-        function_writer.writeline(first_char_lower(self.get_channel_name()), indentation)
-
-    def get_channel_type(self):
-        return f"{self.get_labels_name()}"
-
-
 class InChannel(Channel):
 
     def add_lamda_param(self, param):
@@ -112,6 +99,7 @@ class InChannel(Channel):
         function_writer.write_line(f'receive({first_char_lower(self._channel_name)}) {{', indentation)
         function_writer.write_line(f'({first_char_lower(self.param)}:{self.get_labels_name()}) =>', indentation+1)
         if isWebsite:
+            from dottygen.generator.branch import FunctionLambda
             if isinstance(self.continuation, FunctionLambda):
                 function_writer.write_line(f"displayMessage += s\"Receiving type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}<br/>\"", indentation+1)
             else:

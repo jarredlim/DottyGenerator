@@ -1,9 +1,12 @@
 import typing
 import time
 from dottygen.generator.file_writer import FunctionWriter
-from dottygen.generator.choices import Selection, FunctionLambda, TypeMatch, Function, Termination, Goto, Loop
-from dottygen.generator.types import Label
-from dottygen.generator.channels import InChannel, OutChannel, TypeMatchChannel
+from dottygen.generator.selection import Selection
+from dottygen.generator.base import Termination, Label
+from dottygen.generator.function import Function
+from dottygen.generator.recursion import Goto, Loop
+from dottygen.generator.branch import FunctionLambda, TypeMatch, TypeMatchChannel
+from dottygen.generator.channels import InChannel, OutChannel
 
 from dottygen.automata.efsm import EFSM
 from dottygen.utils.type_declaration_parser import DataType

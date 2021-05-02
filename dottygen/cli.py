@@ -83,6 +83,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, counter=Cou
             with type_declaration_parser.parse(scribble_file) as custom_types:
                 start_time = time.time()
                 exit_code, output = scribble.get_graph(scribble_file, protocol, role)
+                print(output)
                 end_time = time.time()
                 counter.add_nuscr_time(end_time - start_time)
                 if exit_code != 0:

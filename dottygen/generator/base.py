@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from random import randrange
 import random, string
 
-class Type(ABC):
+class CommunicationBase(ABC):
 
     @abstractmethod
     def get_type(self) -> str:
@@ -116,3 +116,18 @@ class Label():
             if i != len(self._payload) - 1:
                 payload_string += ","
         return payload_string
+
+
+class Termination(CommunicationBase):
+
+    def get_type(self) -> str:
+        return "PNil"
+
+    def get_continuation(self):
+        return []
+
+    def get_function_body(self, indentation, function_writer, isWebsite):
+        function_writer.add_print("Terminating...", indentation)
+        if isWebsite:
+            function_writer.write_line('server.stop(0)', indentation)
+        function_writer.write_line('nil', indentation)
