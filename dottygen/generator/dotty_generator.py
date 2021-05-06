@@ -5,7 +5,7 @@ from dottygen.generator.selection import Selection
 from dottygen.generator.base import Termination, Label
 from dottygen.generator.function import Function
 from dottygen.generator.recursion import Goto, Loop
-from dottygen.generator.branch import FunctionLambda, TypeMatch, TypeMatchChannel
+from dottygen.generator.branch import FunctionCall, TypeMatch, TypeMatchParam
 from dottygen.generator.channels import InChannel, OutChannel
 
 from dottygen.automata.efsm import EFSM
@@ -53,7 +53,7 @@ class DottyGenerator:
                 continuation, channels = self._build_helper(actions[0].succ, visited)
                 self._insert_channel(channel_list, channels)
                 type = OutChannel(channel_name, [self._get_label(actions[0])], continuation=continuation,
-                                         sender=self._role, receiver=actions[0].role)
+                                  sender=self._role, receiver=actions[0].role)
             else:
                 type = Selection(channel_name)
                 for action in actions:
@@ -66,6 +66,7 @@ class DottyGenerator:
 
         elif efsm.is_receive_state(state):
             labels = [self._get_label(action) for action in actions]
+            param_name = "x"
             if(len(actions) == 1):
                 continuation, channels = self._build_helper(actions[0].succ, visited)
             else:
@@ -76,16 +77,16 @@ class DottyGenerator:
                 if is_all_terminal:
                     continuation, channels = Termination(), []
                 else:
-                    new_function_name, match_channel_name = self._generate_type_match_function()
-                    match_channel = TypeMatchChannel(match_channel_name, labels)
+                    new_function_name, param_name = self._generate_type_match_function()
+                    match_channel = TypeMatchParam(param_name, labels)
                     function_body, channels = self._type_function(actions, match_channel, visited)
-                    continuation = FunctionLambda(new_function_name, list(channels), "x")
                     channels.insert(0, match_channel)
+                    continuation = FunctionCall(new_function_name, list(channels))
                     self._function_list.append(Function(new_function_name, function_body, list(channels),False))
                     channels.remove(match_channel)
             self._insert_channel(channel_list, channels)
             type = InChannel(channel_name, labels, continuation=continuation, sender=actions[0].role, receiver=self._role)
-            type.add_lamda_param("x")
+            type.add_lamda_param(param_name)
             self._insert_channel(channel_list, [type], True)
 
         if visited[state.id] > 0:

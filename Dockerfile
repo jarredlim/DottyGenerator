@@ -99,7 +99,7 @@ RUN apt-get clean\
   build.sbt /home/dev/
 
   COPY --chown=dev:dev \
-  effpi/project/assembly.sbt /home/dev/project/
+  project/assembly.sbt /home/dev/project/
 
   COPY --chown=dev:dev \
   project/plugins.sbt /home/dev/project/

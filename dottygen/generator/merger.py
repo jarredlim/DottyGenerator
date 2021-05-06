@@ -34,28 +34,12 @@ class Merger():
                     actions = list(state.actions)
                     for action in actions:
                         new_states.append(action.succ)
-            # if old_states ==  set([state.id for state in new_states]):
-            #     print("hhello")
-            #     for state in new_states:
-            #         if self._is_two_party(efsm, [state], role, visited) and not state.id in visited and not efsm.is_terminal_state(state):
-            #             print(state)
-            #             states.append(state)
-            # else:
             states = new_states
         return states
 
     def _generate_channel_name(self,count, role1, role2):
         role_name = f"{role1}_{role2}"
         return f"C_{role_name}_{count}"
-
-    def _get_channel_name(self, states1, states2):
-        for state in states1:
-            if state.has_nested:
-                return True,state.channel_name, state.nested_type
-        for state in states2:
-            if state.has_nested:
-                return True, state.channel_name, state.nested_type
-        return False, "", ""
 
     def _search_action_index(self, action, actions):
         for i in range(len(actions)):

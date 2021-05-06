@@ -1,8 +1,8 @@
 from dottygen.generator.base import CommunicationBase
 from dottygen.generator.utils import first_char_lower
-from dottygen.generator.channels import Channel
+from dottygen.generator.channels import ChannelInstance
 
-class TypeMatchChannel(Channel):
+class TypeMatchParam(ChannelInstance):
 
     def get_type(self) -> str:
         return self.get_channel_name()
@@ -44,12 +44,11 @@ class TypeMatch(CommunicationBase):
              file_writer.write_line(f"}}", indentation+1)
         file_writer.write_line("}", indentation)
 
-class FunctionLambda(CommunicationBase):
+class FunctionCall(CommunicationBase):
 
-    def __init__(self, function_name, channels, param):
+    def __init__(self, function_name, channels):
         self._function_name = function_name
         self._channels = channels
-        self.param = param
 
     def get_function_name(self):
         return self._function_name
@@ -59,15 +58,19 @@ class FunctionLambda(CommunicationBase):
 
     def _get_channel_names(self, is_function=False):
         channel_names = ""
-        for channel in self._channels:
-            channel_name = channel.get_channel_name()
+        for i in range(len(self._channels)):
+            channel_name = self._channels[i].get_channel_name()
             if is_function:
                 channel_name = first_char_lower(channel_name)
-            channel_names += f",{channel_name}"
+            elif i == 0:
+                channel_name += ".type"
+            channel_names += f"{channel_name}"
+            if (i != len(self._channels) - 1):
+                channel_names += ","
         return channel_names
 
     def get_type(self) -> str:
-        return f"{self._function_name}[{self.param}.type{self._get_channel_names()}]"
+        return f"{self._function_name}[{self._get_channel_names()}]"
 
     def get_function_body(self, indentation, file_writer, isWebsite):
-        file_writer.write_line(f"{first_char_lower(self._function_name)}({first_char_lower(self.param)}{self._get_channel_names(True)})", indentation)
+        file_writer.write_line(f"{first_char_lower(self._function_name)}({self._get_channel_names(True)})", indentation)
