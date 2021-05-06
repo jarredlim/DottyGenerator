@@ -1,6 +1,3 @@
-[submodule "effpi"]
-	path = effpi
-	url = git@github.com:alcestes/effpi
 [submodule "nuscr"]
 	path = nuscr
 	url = git@github.com:nuscr/nuscr.git
