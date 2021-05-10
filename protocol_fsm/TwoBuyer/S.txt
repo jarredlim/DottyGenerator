@@ -1,0 +1,39 @@
+digraph G {
+  0;
+  1;
+  2;
+  3;
+  5;
+  6;
+  8;
+  9;
+  10;
+  12;
+  13;
+  15;
+  16;
+  17;
+  18;
+  19;
+  20;
+
+
+  0 -> 1 [label="A?START(location: string)", ];
+  1 -> 2 [label="A!PRICE(amount: number)", ];
+  2 -> 3 [label="B!PRICE(amount: number)", ];
+  3 -> 5 [label="B?OFFER(amount: number)", ];
+  5 -> 6 [label="A!OFFER(amount: number)", ];
+  6 -> 8 [label="A?BUY(address: string)", ];
+  6 -> 12 [label="A?CANCEL()", ];
+  6 -> 15 [label="A?NEGOTIATE()", ];
+  8 -> 9 [label="A!CONFIRM()", ];
+  9 -> 10 [label="B!CONFIRM()", ];
+  12 -> 13 [label="B!CANCEL()", ];
+  15 -> 3 [label="B!NEGOTIATE()", ];
+
+  6 -> 16[label="A#",];
+  16 -> 17[label="B!RETRY(amount: number)"];
+  17 -> 18 [label="B?BUY(address: string)", ];
+  17 -> 19 [label="B?CANCEL()", ];
+  18 -> 20 [label="B!CONFIRM()", ];
+  }

@@ -1,0 +1,19 @@
+digraph G {
+  0;
+  1;
+  2;
+  4;
+  6;
+  7;
+  9;
+
+
+  0 -> 1 [label="S!START(location: string)", ];
+  1 -> 2 [label="S?PRICE(amount: number)", ];
+  2 -> 4 [label="S?OFFER(amount: number)", ];
+  4 -> 2 [label="S!NEGOTIATE()", ];
+  4 -> 6 [label="S!BUY(address: string)", ];
+  4 -> 9 [label="S!CANCEL()", ];
+  6 -> 7 [label="S?CONFIRM()", ];
+
+  }

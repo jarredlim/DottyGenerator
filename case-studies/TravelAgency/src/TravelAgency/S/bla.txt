@@ -1,4 +1,0 @@
- (Out[ C_A_S_1,empty1] >>: 
- In[C_A_S_2, empty2, empty2 => 
-  (Out[ C_A_B_1,empty4] >>: 
- In[C_A_B_2, ok|quit, (x:ok|quit) => A2[x.type]] ) ] ) 

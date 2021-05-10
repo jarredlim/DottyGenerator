@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 import re
 import typing
 
-from codegen.automata.states import State
+from dottygen.automata.states import State
 
 @dataclass
 class Action(ABC):
@@ -17,6 +17,7 @@ class Action(ABC):
     succ: State = field(init=False, compare=False)
 
     _ACTION_LABEL_REGEX: typing.ClassVar[str] = '(?P<role>.+)(?P<op>[!?])(?P<label>.+)\((?P<payloads>.*)\)'
+    _ERR_MESSAGE_REGEX: typing.ClassVar[str] = '(?P<role>.+)(?P<op>[#])'
     _action_token_to_constructor: typing.ClassVar[typing.Dict[str, typing.Type['Action']]] = {}
 
     @classmethod
@@ -33,19 +34,22 @@ class Action(ABC):
         Action instance, transitioning from 'src_state_id' to 'dst_state_id'."""
         
         matcher = re.match(cls._ACTION_LABEL_REGEX, action_label)
-        if not matcher:
+        matcher_error = re.match(cls._ERR_MESSAGE_REGEX, action_label)
+        if not matcher and not matcher_error:
             raise ValueError(f'Invalid action: "{action_label}"')
     
-        components = matcher.groupdict()
+        components = matcher.groupdict() if matcher else matcher_error.groupdict()
         Constructor = Action._action_token_to_constructor.get(components['op'])
         if not Constructor:
             raise ValueError(f'Unsupported operation: "{components["op"]}"')
 
         payloads = [payload.strip() for payload in components['payloads'].split(',')
-                    if payload.strip()]
+                    if payload.strip()] if matcher else []
+
+        labels = components['label'] if matcher else []
         
         return Constructor(role=components['role'],
-                           label=components['label'],
+                           label=labels,
                            state_id=src_state_id,
                            succ_id=dst_state_id,
                            payloads=payloads)
@@ -70,3 +74,8 @@ class ReceiveAction(Action, action_token='?'):
 
     def add_to_efsm(self, efsm: 'EfsmBuilder'):
         efsm.add_action_to_receive_state(self)
+
+class ReceiveErrorAction(Action, action_token='#'):
+
+    def add_to_efsm(self, efsm: 'EfsmBuilder'):
+        efsm.add_action_to_receive_state(self, True)

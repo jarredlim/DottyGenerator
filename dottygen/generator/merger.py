@@ -34,6 +34,8 @@ class Merger():
                     actions = list(state.actions)
                     for action in actions:
                         new_states.append(action.succ)
+                    if efsm.is_error_detection_state(state):
+                        new_states.append(state.error_detection.succ)
             states = new_states
         return states
 

@@ -1,13 +1,14 @@
 from dataclasses import dataclass, field
 import typing
 
-from dottygen.automata.states import NonTerminalState, ReceiveState, SendState, State, TerminalState
+from dottygen.automata.states import NonTerminalState, ReceiveState, SendState, State, TerminalState, ReceiveErrorState
 
 class EfsmBuilder:
 
     _roles: typing.Set[str]
     _send_states: typing.Dict[str, SendState]
     _receive_states: typing.Dict[str, ReceiveState]
+    _error_detection_states: typing.Dict[str, ReceiveErrorState]
     _initial_state_id: str
     _terminal_state_candidates: typing.Set[str]
 
@@ -15,6 +16,7 @@ class EfsmBuilder:
         self._roles = set()
         self._send_states = {}
         self._receive_states = {}
+        self._error_detection_states = {}
         self._initial_state_id = str(min(int(node) for node in nodes))
         self._terminal_state_candidates = set(nodes)
 
@@ -31,15 +33,18 @@ class EfsmBuilder:
         self._roles.add(action.role)
         self._terminal_state_candidates.discard(state_id)
 
-    def add_action_to_receive_state(self, action: 'Action'):
+    def add_action_to_receive_state(self, action: 'Action', error_detect=False):
         """Add the specified 'action' as a transition to the receive state."""
 
         state_id = action.state_id
         receive_state = self._receive_states.get(state_id, ReceiveState(state_id))
-        receive_state.add_action(action)
 
-        # Register receive state to EFSM.
-        self._receive_states[state_id] = receive_state
+        if not error_detect:
+            receive_state.add_action(action)
+            self._receive_states[state_id] = receive_state
+        else:
+            receive_state.add_error_detection(action)
+            self._error_detection_states[state_id] = receive_state
 
         self._roles.add(action.role)
         self._terminal_state_candidates.discard(state_id)
@@ -56,6 +61,7 @@ class EfsmBuilder:
         return EFSM(self._roles,
                     self._send_states,
                     self._receive_states,
+                    self._error_detection_states,
                     self._initial_state_id,
                     terminal_state_id)
 
@@ -65,6 +71,7 @@ class EFSM:
     _roles: typing.Set[str]
     _send_states: typing.Dict[str, SendState]
     _receive_states: typing.Dict[str, ReceiveState]
+    _error_detection_states: typing.Dict[str, ReceiveErrorState]
     _initial_state_id: str
     _terminal_state_id: typing.Optional[typing.Set[str]]
 
@@ -82,6 +89,9 @@ class EFSM:
         for state in self.nonterminal_states:
             for action in state.actions:
                 action.succ = self[action.succ_id]
+            if not state.error_detection is None:
+                state.error_detection.succ = self[state.error_detection.succ_id]
+
     
     @property
     def other_roles(self) -> typing.Set[str]:
@@ -133,6 +143,11 @@ class EFSM:
         """Type guard for 'state' to check if it is a ReceiveState."""
 
         return state.id in self._receive_states
+
+    def is_error_detection_state(self, state: State) -> bool:
+        """Type guard for 'state' to check if it is a ReceiveState."""
+
+        return state.id in self._error_detection_states
 
     def is_terminal_state(self, state: State):
         """Type guard for 'state' to check if it is a TerminalState."""

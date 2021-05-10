@@ -6,7 +6,7 @@ from dottygen.generator.base import Termination, Label
 from dottygen.generator.function import Function
 from dottygen.generator.recursion import Goto, Loop
 from dottygen.generator.branch import FunctionCall, TypeMatch, TypeMatchParam
-from dottygen.generator.channels import InChannel, OutChannel
+from dottygen.generator.channels import InChannel, OutChannel, InErrChannel
 
 from dottygen.automata.efsm import EFSM
 from dottygen.utils.type_declaration_parser import DataType
@@ -85,8 +85,12 @@ class DottyGenerator:
                     self._function_list.append(Function(new_function_name, function_body, list(channels),False))
                     channels.remove(match_channel)
             self._insert_channel(channel_list, channels)
-            type = InChannel(channel_name, labels, continuation=continuation, sender=actions[0].role, receiver=self._role)
-            type.add_lamda_param(param_name)
+            if efsm.is_error_detection_state(state):
+                err_continuation, channels = self._build_helper(state.error_detection.succ, visited)
+                self._insert_channel(channel_list, channels)
+                type = InErrChannel(channel_name, labels, param_name, continuation=continuation,err_continuation=err_continuation, sender=actions[0].role, receiver=self._role)
+            else:
+                type = InChannel(channel_name, labels, param_name, continuation=continuation, sender=actions[0].role, receiver=self._role)
             self._insert_channel(channel_list, [type], True)
 
         if visited[state.id] > 0:

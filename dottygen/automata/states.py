@@ -7,6 +7,7 @@ class State(ABC):
         super().__init__()
         self._id = state_id
         self._is_set_channel = False
+        self._error_detection = False
 
     @property
     def id(self) -> str:
@@ -44,10 +45,12 @@ class TerminalState(State):
 class NonTerminalState(State, ABC):
 
     _actions: typing.Dict[str, 'Action']
+    _error_action: 'ReceiveErrorAction'
 
     def __init__(self, state_id: str):
         super().__init__(state_id)
         self._actions = {}
+        self._error_action = None
 
     @property
     def role(self) -> str:
@@ -75,6 +78,15 @@ class NonTerminalState(State, ABC):
                              f'already exists in S{self.id}')
 
         self._actions[action.label] = action
+
+    def add_error_detection(self, action: 'Action'):
+        """Add the specified 'action' to this state instance."""
+        self._error_detection = True
+        self._error_action = action
+
+    @property
+    def error_detection(self):
+        return self._error_action
 
     def __getitem__(self, label: str) -> 'Action':
         """Index into the State by the specified 'label' to get the
@@ -104,4 +116,7 @@ class SendState(NonTerminalState):
 
 
 class ReceiveState(NonTerminalState):
+    pass
+
+class ReceiveErrorState(NonTerminalState):
     pass
