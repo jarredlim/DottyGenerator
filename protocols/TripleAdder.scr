@@ -4,47 +4,47 @@ global protocol Adder(role Client, role Svr, role A) {
 
     choice at Client {
         ADD(number, number)   from Client to Svr;
-        Bla() from Client to A;
-        choice at Client {
-        ADD(number, number)   from Client to Svr;
-        Bla() from Client to A;
+        Test1() from Client to A;
+                choice at Client {
+                ADD(number, number)   from Client to Svr;
+                Test1() from Client to A;
+        
+            } or {
+                QUIT()                from Client to Svr;
+                Test2() from Client to A;
+            } or {
+                Hello() from Client to Svr;
+                Test3() from Client to A;
+            }
 
     } or {
         QUIT()                from Client to Svr;
-        Bli() from Client to A;
+        Test2() from Client to A;
+                choice at Client {
+                ADD(number, number)   from Client to Svr;
+                Test1() from Client to A;
+        
+            } or {
+                QUIT()                from Client to Svr;
+                Test2() from Client to A;
+            } or {
+                Hello() from Client to Svr;
+                Test3() from Client to A;
+            }
     } or {
-        Hello() from Client to Svr;
-        Blo() from Client to A;
-    }
-
-    } or {
-        QUIT()                from Client to Svr;
-        Bli() from Client to A;
-        choice at Client {
-        ADD(number, number)   from Client to Svr;
-        Bla() from Client to A;
-
-    } or {
-        QUIT()                from Client to Svr;
-        Bli() from Client to A;
-    } or {
-        Hello() from Client to Svr;
-        Blo() from Client to A;
-    }
-    } or {
-        Hello() from Client to Svr;
-        Blo() from Client to A;
-        choice at Client {
-        ADD(number, number)   from Client to Svr;
-        Bla() from Client to A;
-
-    } or {
-        QUIT()                from Client to Svr;
-        Bli() from Client to A;
-    } or {
-        Hello() from Client to Svr;
-        Blo() from Client to A;
-    }
+        BYE() from Client to Svr;
+        Test3() from Client to A;
+            choice at Client {
+            ADD(number, number)   from Client to Svr;
+            Test1() from Client to A;
+    
+        } or {
+            QUIT()                from Client to Svr;
+            Test2() from Client to A;
+        } or {
+            Hello() from Client to Svr;
+            Test3() from Client to A;
+        }
     }
 
 }

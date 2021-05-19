@@ -1,0 +1,34 @@
+module Test;
+
+global protocol Test(role A, role B, role C) {
+
+    choice at A{
+       Hello() from A to B;
+       choice at A{
+          Test1() from A to C;
+       } or {
+          Test2() from A to C;
+       }
+    } or {
+       Bye() from A to B;
+       Test3() from A to C;
+       choice at C {
+          Hello() from C to B;
+          Test1() from C to A;
+       } or {
+          Bye() from C to B;
+                  choice at C{
+                  Test2() from C to A;
+               } or {
+                  Test3() from C to A;
+               }
+       } or {
+         Ok() from C to B;
+         Test4() from C to A;
+       }
+    } or {
+       Ok() from A to B;
+       Test4() from A to C;
+    }
+
+}
