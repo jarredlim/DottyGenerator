@@ -1,5 +1,6 @@
 from dottygen.generator.base import CommunicationBase
-from dottygen.generator.utils import first_char_lower
+from dottygen.generator.utils import first_char_lower, first_char_upper
+
 
 class  Function(CommunicationBase):
     def __init__(self,function_name, body, channels, is_main):

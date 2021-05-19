@@ -1,0 +1,46 @@
+module Test;
+
+global protocol Test(role A, role B) {
+
+    choice at A {
+        Item1()   from A to B;
+     choice at B {
+        ItemB1()   from B to A;
+        choice at A {
+        ItemA1()   from A to B;
+
+    } or {
+        ItemA2()   from A to B;
+    }
+    } or {
+        ItemB2()   from B to A;
+        choice at A {
+        ItemA3()   from A to B;
+
+    } or {
+        ItemA4()   from A to B;
+    }
+    }
+    } or {
+        Item2()   from A to B;
+        choice at B {
+        ItemB1()   from B to A;
+        choice at A {
+        ItemA5()   from A to B;
+
+    } or {
+        ItemA6()   from A to B;
+    }
+
+    } or {
+        ItemB2()   from B to A;
+choice at A {
+        ItemA7()   from A to B;
+
+    } or {
+        ItemA8()   from A to B;
+    }
+    }
+    }
+
+}

@@ -8,6 +8,7 @@ from dottygen.automata import parser as automata_parser
 from dottygen.utils import logger, scribble, type_declaration_parser, role_parser
 from dottygen.generator import DottyGenerator
 from dottygen.generator.merger import Merger
+from dottygen.generator.unopmerger import UnOpMerger
 from dottygen.generator.channel_generator import CaseClassGenerator, ChannelGenerator
 from dottygen.generator.file_writer import FileReader, RecurseTypeGenerator
 from dottygen.generator.output_generator import OutputGenerator
@@ -31,6 +32,8 @@ def parse_arguments(args: typing.List[str]) -> typing.Dict:
 
     parser.add_argument('--error', help='detect error', action='store_true')
 
+    parser.add_argument('--unop', help='unoptimised merging', action='store_true')
+
     parser.add_argument("--website", nargs='*', default=None)
 
     parsed_args = parser.parse_args(args)
@@ -48,11 +51,12 @@ def main(args: typing.List[str]) -> int:
     batch = not parsed_args['single']
     err_detect = parsed_args['error']
     website_roles = parsed_args['website']
+    unop = parsed_args['unop']
 
-    return generate(batch, output_folder, protocol, scribble_file, website_roles, err_detect)
+    return generate(batch, output_folder, protocol, scribble_file, website_roles, err_detect, unop)
 
 
-def generate(batch, output_folder, protocol, scribble_file, website, err_detect, counter=Counter(), line_counter=LineCounter()):
+def generate(batch, output_folder, protocol, scribble_file, website, err_detect, unop, counter=Counter(), line_counter=LineCounter()):
     labels = set()
     channel_list = []
     efsms = {}
@@ -114,7 +118,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
             return 1
 
     start_time = time.time()
-    merger = Merger(efsms)
+    merger = UnOpMerger(efsms) if unop else Merger(efsms)
     channel_map = merger.merge()
     end_time = time.time()
     counter.add_merge_time(end_time-start_time)

@@ -45,6 +45,10 @@ class ChannelInstance(CommunicationBase):
 
 class OutChannel(ChannelInstance):
 
+    def __init__(self, channel_name: str, labels, continuation="", sender="", receiver="", send_err=False):
+        super().__init__(channel_name, labels, continuation, sender, receiver)
+        self._send_err = send_err
+
     def get_type(self) -> str:
         return f"Out[{self._channel_name},{self.get_labels_name()}] >>: {self.continuation.get_type()}"
 
@@ -64,6 +68,10 @@ class OutChannel(ChannelInstance):
             function_writer.write_line("semaphore.acquire", indentation)
 
         function_writer.add_print(f'Sending {self.get_labels_name()} through channel {first_char_lower(self.get_channel_name())}',
+                indentation)
+        if self._send_err:
+            function_writer.write_line(
+                f'if(false){{throw RuntimeException("Some exception")}}',
                 indentation)
         if isWebsite:
             function_writer.write_line(f'send({first_char_lower(self.get_channel_name())},{self._labels[0].get_payload_assign_string()}) >> {{',
@@ -134,5 +142,5 @@ class InErrChannel(ChannelInstance):
         function_writer.write_line(f'{{(err : Throwable) =>', indentation)
         function_writer.add_print(f'Receive {self.get_labels_name()} through channel {first_char_lower(self._channel_name)} TIMEOUT, activating new option', indentation + 1)
         self._error_continuation.get_function_body(indentation + 1, function_writer, isWebsite)
-        function_writer.write_line(f'}}, Duration("10 seconds"))', indentation)
+        function_writer.write_line(f'}}, Duration("5 seconds"))', indentation)
 

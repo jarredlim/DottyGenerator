@@ -8,6 +8,7 @@ class State(ABC):
         self._id = state_id
         self._is_set_channel = False
         self._error_detection = False
+        self._send_error = False
 
     @property
     def id(self) -> str:
@@ -27,6 +28,12 @@ class State(ABC):
 
         return self._is_set_channel
 
+    @property
+    def has_send_error(self):
+        """Return state identifier."""
+
+        return self._send_error
+
     def __str__(self):
         return self.id
 
@@ -36,6 +43,9 @@ class State(ABC):
     def set_channel_name(self, name):
         self._channel_name = name
         self._is_set_channel = True
+
+    def set_send_error(self):
+        self._send_error = True
 
 
 class TerminalState(State):
