@@ -67,7 +67,7 @@ class Label():
                 payload_type = self._convert_payload_type(self._payload[i])
 
             output += f"payloads({i})"
-            if payload_type == "Int":
+            if "Int" in payload_type:
                 output += ".toInt"
 
             if i != len(self._payload) - 1:
