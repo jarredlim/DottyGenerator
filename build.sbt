@@ -1,4 +1,4 @@
-val dottyVersion = "3.0.0-RC2-bin-20210325-eeb8340-NIGHTLY"
+val dottyVersion = "3.0.0-RC3"
 val effpiVersion = "0.0.3"
 
 val useEffpiPlugin = settingKey[Boolean]("Use the effpi compiler plugin in sub-projects.")
@@ -140,6 +140,19 @@ lazy val tests = project
     scalacOptions ++= pluginOpts(false, false).value
   )
 
+lazy val case_studies = project
+  .in(file("case_studies/sandbox"))
+  .dependsOn(effpi)
+  .settings(
+    name := "case-study-sandbox",
+    version := effpiVersion,
+    scalaVersion := dottyVersion,
+    scalacOptions ++= pluginOpts(false, false).value,
+    libraryDependencies ++= Seq(
+       "io.circe" %% "circe-core" % "0.14.0-M6",
+       "io.circe" %% "circe-parser" % "0.14.0-M6",
+    )
+  )
 
 lazy val pluginBenchmarks = project
   .in(file("./effpi/plugin-benchmarks"))

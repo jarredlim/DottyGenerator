@@ -11,6 +11,7 @@ services:
       - ./protocol_fsm:/home/dev/protocol_fsm
       - ./scripts:/home/dev/scripts
       - ./effpi_sandbox:/home/dev/effpi_sandbox
+      - ./case_studies:/home/dev/case_studies
     ports: 
       - "127.0.0.1:3000:3000"
       - "127.0.0.1:5000:5000"
@@ -24,6 +25,7 @@ services:
     volumes:
       - ./dottygen:/home/dev/dottygen
       - ./effpi_sandbox:/home/dev/effpi_sandbox
+      - ./case_studies:/home/dev/case_studies
     command: 
       python3.8 -m codegen.tests.system
 
@@ -34,3 +36,4 @@ volumes:
   protocol_fsm:
   scripts:
   effpi_sandbox:
+  case_studies:
