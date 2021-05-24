@@ -17,14 +17,14 @@ import java.io.InputStream
 import effpi_sandbox.Http.RootHandler
 
 implicit val timeout: Duration = Duration("TIMEOUT seconds")
-val semaphore = new Semaphore(0)
+private val semaphore = new Semaphore(0)
 
-var canRelease = false
-var possibleMessage = Map[String, List[String]]()
-var choice = ""
-var displayMessage = ""
-var payloads = List[String]()
-var server = HttpServer.create(new InetSocketAddress(HOST), 0)
+private var canRelease = false
+private var possibleMessage = Map[String, List[String]]()
+private var choice = ""
+private var displayMessage = ""
+private var payloads = List[String]()
+private var server = HttpServer.create(new InetSocketAddress(HOST), 0)
 
 IMPLEMENTATIONS
 

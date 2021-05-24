@@ -2,8 +2,8 @@ module TravelAgency;
 
 global protocol Booking(role C, role A, role S)
 {
-  Query(x: Int) from C to A;
-  Quote(quot: Int) from A to C;
+  Query(y: Int) from C to A;
+  Quote(q1: Int) from A to C;
   do BookingAux(C, A, S);
 }
 

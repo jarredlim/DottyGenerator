@@ -28,7 +28,8 @@ class  Function(CommunicationBase):
         return type
 
     def get_function_body(self,indentation, function_writer, isWebsite, host=""):
-        function_writer.write_line(f"def {first_char_lower(self._function_name)}(", indentation)
+        private = "" if self._is_main else "private "
+        function_writer.write_line(f"{private}def {first_char_lower(self._function_name)}(", indentation)
         channel_type = ""
         for i in range(len(self._channels)):
             channel_name = first_char_lower(self._channels[i].get_channel_name())
