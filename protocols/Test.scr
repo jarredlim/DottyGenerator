@@ -1,22 +1,43 @@
-module Test;
+module Bank;
 
-global protocol Test(role C, role S)
-{
-  HELLO() from C to S;
+global protocol login(role A, role B, role C, role D) {
+     OK() from C to B;
+     OK() from B to A;
+     OK() from B to D;
+     do action(A, B, C, D);
 
-  choice at C
-  {
-    ADD() from C to S;
-    choice at C{
-      BLA1() from C to S;
-    }
+}
+
+aux global protocol action(role A, role B, role C, role D) {
+   choice at A{
+       Withdraw(number) from A to B;
+       Withdraw(number) from B to D;
+       do response(A, B, C, D);
+   }
     or{
-     BYE2() from C to S;
+      Deposit(number) from A to B;
+      Deposit(number) from B to D;
+      do response(A, B, C, D);
+    }or{
+      Cancel() from A to B;
+      Cancel() from B to D;
     }
+}
 
+aux global protocol response(role A, role B, role C, role D) {
+   choice at D{
+     OK() from D to B;
+     OK() from B to A;
+     do action(A, B, C, D);
+} or {
+     Fail(errorcode: number, errorMessage: string) from D to B;
+     choice at B{
+     Cancel() from B to A;
+     Cancel() from B to D;
+  } or {
+     Retry() from B to A;
+     Retry() from B to D;
+     do action(A, B, C, D);
   }
-  or
-  {
-    BYE() from C to S;
-  }
+}
 }

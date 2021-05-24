@@ -1,0 +1,107 @@
+module Bank;
+
+global protocol Bank(role B1, role Svr, role SvrA, role SvrB, role B2) {
+
+    Request() from B1 to Svr;
+    Request() from B2 to Svr;
+    do verify1(B1, Svr, SvrA, SvrB, B2);
+}
+
+aux global protocol verify1(role B1, role Svr, role SvrA, role SvrB, role B2) {
+   Login(userid: string, pw: string) from B1 to Svr;
+   Login(userid: string, pw: string) from Svr to SvrA;
+   choice at SvrA{
+     OK() from SvrA to Svr;
+     OK() from Svr to B1;
+     OK() from Svr to B2;
+     OK() from Svr to SvrB;
+     do action1(B1, Svr, SvrA, SvrB, B2);
+} or {
+     Fail(errorcode: number, errorMessage: string) from SvrA to Svr;
+     Failed() from Svr to B1;
+     Failed() from Svr to B2;
+     Failed() from Svr to SvrB;
+     do verify2(Svr, SvrA, SvrB, B2);
+
+}
+}
+
+aux global protocol verify2(role B2, role Svr, role SvrA, role SvrB) {
+   Login(userid: string, pw: string) from B2 to Svr;
+   Login(userid: string, pw: string) from Svr to SvrA;
+   choice at SvrA{
+     OK() from SvrA to Svr;
+     OK() from Svr to B2;
+     OK() from Svr to SvrB;
+     do action2(B2, Svr, SvrB);
+} or {
+     Fail(errorcode: number, errorMessage: string) from SvrA to Svr;
+     Failed() from Svr to B2;
+     Failed() from Svr to SvrB;
+}
+}
+
+aux global protocol action1(role B1, role Svr, role SvrA, role SvrB, role B2) {
+   choice at B1{
+       Withdraw(number) from B1 to Svr;
+       Withdraw(number) from Svr to SvrB;
+       OK() from Svr to B2;
+       OK() from Svr to SvrA;
+       do response1(B1, Svr, SvrA, SvrB, B2);
+   }
+    or{
+      Deposit(number) from B1 to Svr;
+      Deposit(number) from Svr to SvrB;
+      OK() from Svr to B2;
+      OK() from Svr to SvrA;
+      do response1(B1, Svr, SvrA, SvrB, B2);
+    }or{
+      Cancel() from B1 to Svr;
+      Cancel() from Svr to B2;
+      Failed() from Svr to SvrA;
+      Failed() from Svr to SvrB;
+      do verify2(B2, Svr, SvrA, SvrB);
+    }
+}
+
+aux global protocol action2(role B2, role Svr, role SvrB) {
+   choice at B2{
+       Withdraw(number) from B2 to Svr;
+       Withdraw(number) from Svr to SvrB;
+       do response2(B2, Svr, SvrB);
+   }
+    or{
+      Deposit(number) from B2 to Svr;
+      Deposit(number) from Svr to SvrB;
+      do response2(B2, Svr, SvrB);
+    }or{
+      Cancel() from B2 to Svr;
+      Failed() from Svr to SvrB;
+    }
+}
+
+aux global protocol response1(role B1, role Svr, role SvrA, role SvrB, role B2) {
+   choice at SvrB{
+     OK() from SvrB to Svr;
+     OK() from Svr to B1;
+     OK() from Svr to B2;
+     OK() from Svr to SvrA;
+     do verify2(B2, Svr, SvrA, SvrB);
+} or {
+     Fail(errorcode: number, errorMessage: string) from SvrB to Svr;
+     Failed() from Svr to B1;
+     Failed() from Svr to B2;
+     Failed() from Svr to SvrA;
+     do verify2(B2, Svr, SvrA, SvrB);
+}
+}
+
+aux global protocol response2(role B2, role Svr, role SvrB) {
+   choice at SvrB{
+     OK() from SvrB to Svr;
+     OK() from Svr to B2;
+} or {
+     Fail(errorcode: number, errorMessage: string) from SvrB to Svr;
+     Failed() from Svr to B2;
+}
+}

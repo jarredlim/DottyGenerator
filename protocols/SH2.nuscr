@@ -1,0 +1,55 @@
+module SH;
+
+global protocol SH(role P, role R, role C)
+{
+  Plane(x1:Int) from P to R;
+  Plane2(x2:Int) from P to R;
+  Plane3(x3:Int) from P to R;
+  Plane4(x4:Int) from P to R;
+  do Loop(P, R, C);
+}
+
+aux global protocol Loop(role P, role R, role C)
+{
+  choice at P
+  {
+    IsAbove(v1:Int) from P to R;
+    Res(b1:Int) from R to P;
+    IsAbove(v2:Int) from P to R;
+    Res(b2:Int) from R to P;
+    choice at P
+    {
+      BothIn() from P to R;
+      BothIn2(r1:Int) from P to C;
+      do Loop(P, R, C);
+    }
+    or
+    {
+      BothOut() from P to R; @"b1=0 && b2=0"
+      BothOut() from P to C;
+      do Loop(P, R, C);
+    }
+    or
+    {
+      Intersct(y1:Int) from P to R;
+      Intersct2(y2:Int) from P to R;
+      Res(i:Int) from R to P;
+      choice at P
+      {
+        SecOut(r2:Int) from P to C;
+        do Loop(P, R, C);
+      }
+      or
+      {
+        SecIn(r3:Int) from P to C;
+        SecIn2(r4:Int) from P to C;
+        do Loop(P, R, C);
+      }
+    }
+  }
+  or
+  {
+    Close() from P to R;
+    Close() from P to C;
+  }
+}

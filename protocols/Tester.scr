@@ -1,31 +1,63 @@
-module Tester;
+module Bank;
 
+global protocol login(role A, role B, role C, role D) {
+   choice at C{
+     OK() from C to B;
+     OK() from B to A;
+     OK() from B to D;
+     do action(A, B, C, D);
+} or {
+     Fail(errorcode: number, errorMessage: string) from C to B;
+     choice at B{
+     Cancel() from B to A;
+     Cancel() from B to C;
+     Cancel() from B to D;
+  } or {
+     Retry() from B to A;
+     Retry() from B to C;
+     Retry() from B to D;
+     do login(A, B, C, D);
+  }
 
-global protocol Tester(role C, role S, role P)
-{
-    HELLO(u:Int) from C to S;
-    choice at C
-    {
-      ADD(w:Int) from C to S;
-      choice at P
-      {
-        Test1() from P to S;
-      }
-      or
-      {
-       Test2() from P to S;
-      }
+}
+}
+
+aux global protocol action(role A, role B, role C, role D) {
+   choice at A{
+       Withdraw(number) from A to B;
+       Withdraw(number) from B to D;
+       OK() from B to C;
+       do response(A, B, C, D);
+   }
+    or{
+      Deposit(number) from A to B;
+      Deposit(number) from B to D;
+      OK() from B to C;
+      do response(A, B, C, D);
+    }or{
+      Cancel() from A to B;
+      Cancel() from B to C;
+      Cancel() from B to D;
     }
-    or
-    {
-      BYE() from C to S;
-      choice at P
-      {
-        Test1() from P to S;
-      }
-      or
-      {
-       Test2() from P to S;
-      }
-    }
+}
+
+aux global protocol response(role A, role B, role C, role D) {
+   choice at D{
+     OK() from D to B;
+     OK() from B to A;
+     OK() from B to C;
+     do action(A, B, C, D);
+} or {
+     Fail(errorcode: number, errorMessage: string) from D to B;
+     choice at B{
+     Cancel() from B to A;
+     Cancel() from B to C;
+     Cancel() from B to D;
+  } or {
+     Retry() from B to A;
+     Retry() from B to C;
+     Retry() from B to D;
+     do action(A, B, C, D);
+  }
+}
 }

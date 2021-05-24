@@ -1,0 +1,18 @@
+module NoughtsAndCrosses;
+
+global protocol Game(role Svr, role P1, role P2) {
+
+	Pos(number) from P1 to Svr;
+	choice at Svr {
+		Lose(number)   from Svr to P2;
+		Win(number)    from Svr to P1;
+	} or {
+		Draw(number)   from Svr to P2;
+		Draw(number)   from Svr to P1;
+	} or {
+		Update(number) from Svr to P2;
+		Update(number) from Svr to P1;
+		do Game(Svr, P2, P1);
+	}
+
+}
