@@ -15,9 +15,10 @@ class CaseClassGenerator():
 
 class ChannelGenerator():
 
-    def __init__(self, channel_list, channel_map):
+    def __init__(self, channel_list, channel_map, asynchronous=False):
         self._channel_list = channel_list
         self._channel_map = channel_map
+        self._async = asynchronous
 
     def _get_map_index(self, channel, channel_map):
         for i in range(len(channel_map)):
@@ -43,7 +44,10 @@ class ChannelGenerator():
                  for labels in channel.get_labels():
                      channel_labels.add(labels)
             channel_names.append(f"c{i+1}")
-            channel_types.append(f"Channel[{get_labels_name(list(channel_labels))}]()")
+            if self._async:
+                channel_types.append(f"Channel.async[{get_labels_name(list(channel_labels))}]()")
+            else:
+                channel_types.append(f"Channel[{get_labels_name(list(channel_labels))}]()")
 
         participant_funcs = []
         for role, channels in self._channel_list:

@@ -12,7 +12,8 @@ from argparse import ArgumentParser
 def _build_test_case(*,
                      filename: str,
                      protocol: str,
-                     unop) -> typing.Type[unittest.TestCase]:
+                     unop,
+                     asynchronous) -> typing.Type[unittest.TestCase]:
 
     output_file = f"test.scala"
     parent_output = os.path.abspath(os.path.join('effpi_sandbox',output_file))
@@ -28,6 +29,8 @@ def _build_test_case(*,
             flags = [os.path.join(TEST_DIR, 'examples', filename), protocol ]
             if unop:
                 flags += ["--unop"]
+            if asynchronous:
+                flags += ["--async"]
 
             phase = 'Run codegen'
             exit_code = run_codegen(flags)
@@ -73,6 +76,8 @@ def parse_arguments(args: typing.List[str]) -> typing.Dict:
 
     parser.add_argument('--unop', help='unoptimised merging', action='store_true')
 
+    parser.add_argument('--async', help='asynchronous communication', action='store_true')
+
     parsed_args = parser.parse_args(args)
     return vars(parsed_args)
 
@@ -80,12 +85,13 @@ def build_test_suite(tests, args: typing.List[str]) -> unittest.TestSuite:
 
     parsed_args = parse_arguments(args)
     unop = parsed_args['unop']
+    asynchronous = parsed_args['async']
 
     suite = unittest.TestSuite()
     for test in tests:
         for protocol in test.protocols:
             TestCase = _build_test_case(filename=test.filename,
-                                        protocol=protocol.identifier, unop=unop)
+                                        protocol=protocol.identifier, unop=unop, asynchronous=asynchronous)
 
             suite.addTests(unittest.makeSuite(TestCase))
 

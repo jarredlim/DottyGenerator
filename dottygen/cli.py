@@ -34,6 +34,8 @@ def parse_arguments(args: typing.List[str]) -> typing.Dict:
 
     parser.add_argument('--unop', help='unoptimised merging', action='store_true')
 
+    parser.add_argument('--async', help='asynchronous communication', action='store_true')
+
     parser.add_argument("--website", nargs='*', default=None)
 
     parsed_args = parser.parse_args(args)
@@ -51,12 +53,13 @@ def main(args: typing.List[str]) -> int:
     batch = not parsed_args['single']
     err_detect = parsed_args['error']
     website_roles = parsed_args['website']
+    asynchronous = parsed_args['async']
     unop = parsed_args['unop']
 
-    return generate(batch, output_folder, protocol, scribble_file, website_roles, err_detect, unop)
+    return generate(batch, output_folder, protocol, scribble_file, website_roles, err_detect, unop, asynchronous)
 
 
-def generate(batch, output_folder, protocol, scribble_file, website, err_detect, unop, counter=Counter(), line_counter=LineCounter()):
+def generate(batch, output_folder, protocol, scribble_file, website, err_detect, unop, asynchronous, counter=Counter(), line_counter=LineCounter()):
     labels = set()
     channel_list = []
     efsms = {}
@@ -154,7 +157,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
         #print(counter.get_merge_time() + counter.get_class_time() + counter.get_efsm_time() + counter.get_type_time() + counter.get_function_time() + counter.get_nuscr_time())
         line_counter.add_case_class(labels)
         case_classes = CaseClassGenerator(labels).generate()
-        channels_assign = ChannelGenerator(channel_list, channel_map).generate()
+        channels_assign = ChannelGenerator(channel_list, channel_map, asynchronous).generate()
         if not batch:
             output_generator.single_output(output_folder, case_classes, channels_assign, protocol)
         else:
