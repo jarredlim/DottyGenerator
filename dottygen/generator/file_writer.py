@@ -29,7 +29,7 @@ class RecurseTypeGenerator:
 class FileReader:
 
     def __init__(self, role, protocol):
-        self._file = os.path.abspath(os.path.join("protocol_fsm", protocol, f"{role}.txt"))
+        self._file = os.path.abspath(os.path.join("protocols","protocol_fsm", protocol, f"{role}.txt"))
 
     def get_string(self):
         with open(self._file) as f:

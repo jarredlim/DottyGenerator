@@ -8,7 +8,7 @@ from dottygen.automata import parser as automata_parser
 from dottygen.utils import logger, scribble, type_declaration_parser, role_parser
 from dottygen.generator import DottyGenerator
 from dottygen.generator.merger import Merger
-from dottygen.generator.unopmerger import UnOpMerger
+from dottygen.generator.err_handle_merger import ErrorDetectMerger
 from dottygen.generator.channel_generator import CaseClassGenerator, ChannelGenerator
 from dottygen.generator.file_writer import FileReader, RecurseTypeGenerator
 from dottygen.generator.output_generator import OutputGenerator
@@ -118,7 +118,9 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
             return 1
 
     start_time = time.time()
-    merger = UnOpMerger(efsms) if unop else Merger(efsms)
+    merger = Merger(efsms, unop)
+    if err_detect:
+        merger = ErrorDetectMerger(efsms)
     channel_map = merger.merge()
     end_time = time.time()
     counter.add_merge_time(end_time-start_time)
