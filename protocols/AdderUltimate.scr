@@ -8,14 +8,14 @@ global protocol Adder(role Client, role Svr, role A) {
             Hi1() from Svr to A;
             choice at Client {
               Yes() from Client to Svr;
-              choice at Svr {
-                Hi1() from Svr to A;
-              } or {
-                Hi3() from Svr to A;
-               }
+                  choice at Svr {
+                    Hi2() from Svr to A;
+                  } or {
+                    Hi3() from Svr to A;
+                   }
              } or {
                No() from Client to Svr;
-               Hi2() from Svr to A;
+                Hi1() from Svr to A;
              } or {
                OK() from Client to Svr;
                Hi4() from Svr to A;
@@ -24,17 +24,17 @@ global protocol Adder(role Client, role Svr, role A) {
             Hi2() from Svr to A;
             choice at Client {
               Yes() from Client to Svr;
-              choice at Svr {
-                Hi1() from Svr to A;
-              } or {
-                Hi3() from Svr to A;
-               }
+                      choice at Svr {
+                        Hi1() from Svr to A;
+                      } or {
+                        Hi4() from Svr to A;
+                       }
              } or {
                No() from Client to Svr;
                Hi2() from Svr to A;
              } or {
                OK() from Client to Svr;
-               Hi4() from Svr to A;
+               Hi3() from Svr to A;
              }
         }
     } or {
@@ -42,14 +42,14 @@ global protocol Adder(role Client, role Svr, role A) {
         Hi3() from Svr to A;
         choice at Client {
               Yes() from Client to Svr;
-              choice at Svr {
-                Hi1() from Svr to A;
-              } or {
-                Hi3() from Svr to A;
-               }
+                  choice at Svr {
+                    Hi1() from Svr to A;
+                  } or {
+                    Hi2() from Svr to A;
+                   }
              } or {
                No() from Client to Svr;
-               Hi2() from Svr to A;
+               Hi3() from Svr to A;
              } or {
                OK() from Client to Svr;
                Hi4() from Svr to A;
@@ -59,11 +59,11 @@ global protocol Adder(role Client, role Svr, role A) {
         Hi4() from Svr to A;
         choice at Client {
               Yes() from Client to Svr;
-              choice at Svr {
-                Hi1() from Svr to A;
-              } or {
-                Hi3() from Svr to A;
-               }
+                  choice at Svr {
+                    Hi1() from Svr to A;
+                  } or {
+                    Hi3() from Svr to A;
+                   }
              } or {
                No() from Client to Svr;
                Hi2() from Svr to A;

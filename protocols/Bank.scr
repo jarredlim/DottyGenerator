@@ -2,8 +2,8 @@ module Bank;
 
 global protocol Bank(role B1, role Svr, role SvrA, role SvrB, role B2) {
 
-    START(basePrice:number) from Svr to B1;
-    START(basePrice:number) from Svr to B2;
+    Request() from B1 to Svr;
+    Request() from B2 to Svr;
     do verify(B1, Svr, SvrA, SvrB, B2);
 }
 
@@ -11,26 +11,18 @@ aux global protocol verify(role B1, role Svr, role SvrA, role SvrB, role B2) {
    Login(userid: string, pw: string) from B1 to Svr;
    Login(userid: string, pw: string) from Svr to SvrA;
    choice at SvrA{
-     Ok() from SvrA to Svr;
+     OK() from SvrA to Svr;
      OK() from Svr to B1;
      OK() from Svr to B2;
      OK() from Svr to SvrB;
      do action(B1, Svr, SvrA, SvrB, B2);
 } or {
      Fail(errorcode: number, errorMessage: string) from SvrA to Svr;
-     choice at Svr{
-     Freeze() from Svr to B1;
-     Cease() from Svr to B2;
-     Cease() from Svr to SvrA;
-     Cease() from Svr to SvrB;
-  } or {
      Failed() from Svr to B1;
      Failed() from Svr to B2;
      Failed() from Svr to SvrA;
      Failed() from Svr to SvrB;
      do verify(B2, Svr, SvrA, SvrB, B1);
-  }
-
 }
 }
 
@@ -59,24 +51,17 @@ aux global protocol action(role B1, role Svr, role SvrA, role SvrB, role B2) {
 
 aux global protocol response(role B1, role Svr, role SvrA, role SvrB, role B2) {
    choice at SvrB{
-     Ok() from SvrB to Svr;
+     OK() from SvrB to Svr;
      OK() from Svr to B1;
      OK() from Svr to B2;
      OK() from Svr to SvrA;
      do verify(B2, Svr, SvrA, SvrB, B1);
 } or {
      Fail(errorcode: number, errorMessage: string) from SvrB to Svr;
-     choice at Svr{
-     Freeze() from Svr to B1;
-     Cease() from Svr to B2;
-     Cease() from Svr to SvrA;
-     Cease() from Svr to SvrB;
-  } or {
      Failed() from Svr to B1;
      Failed() from Svr to B2;
      Failed() from Svr to SvrA;
      Failed() from Svr to SvrB;
      do verify(B2, Svr, SvrA, SvrB, B1);
-  }
 }
 }

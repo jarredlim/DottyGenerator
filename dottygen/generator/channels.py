@@ -45,6 +45,10 @@ class ChannelInstance(CommunicationBase):
 
 class OutChannel(ChannelInstance):
 
+    def __init__(self, channel_name: str, labels, continuation="", sender="", receiver="", send_err=False):
+        super().__init__(channel_name, labels, continuation, sender, receiver)
+        self._send_err = send_err
+
     def get_type(self) -> str:
         return f"Out[{self._channel_name},{self.get_labels_name()}] >>: {self.continuation.get_type()}"
 
@@ -65,6 +69,10 @@ class OutChannel(ChannelInstance):
 
         function_writer.add_print(f'Sending {self.get_labels_name()} through channel {first_char_lower(self.get_channel_name())}',
                 indentation)
+        if self._send_err:
+            function_writer.write_line(
+                f'if(false){{throw RuntimeException("Some exception")}}',
+                indentation)
         if isWebsite:
             function_writer.write_line(f'send({first_char_lower(self.get_channel_name())},{self._labels[0].get_payload_assign_string()}) >> {{',
                                        indentation)
@@ -76,7 +84,8 @@ class OutChannel(ChannelInstance):
 
 class InChannel(ChannelInstance):
 
-    def add_lamda_param(self, param):
+    def __init__(self, channel_name: str, labels,param, continuation="", sender="", receiver=""):
+        super().__init__(channel_name, labels, continuation, sender, receiver)
         self.param = param
 
     def get_type(self) -> str:
@@ -102,7 +111,36 @@ class InChannel(ChannelInstance):
         function_writer.write_line(f'}}', indentation)
 
 
+class InErrChannel(ChannelInstance):
 
+    def __init__(self, channel_name: str, labels, param, continuation="",err_continuation="", sender="", receiver=""):
+        super().__init__(channel_name, labels, continuation, sender, receiver)
+        self.param = param
+        self._error_continuation = err_continuation
 
+    def get_type(self) -> str:
+        labels_name = self.get_labels_name()
+        return f"InErr[{self._channel_name}, {labels_name}, ({self.param}:{labels_name}) => {self.continuation.get_type()}, (err:Throwable) => {self._error_continuation.get_type()}]"
 
+    def get_channel_type(self):
+        return f"InChannel[{self.get_labels_name()}]"
+
+    def get_function_body(self, indentation, function_writer, isWebsite):
+        function_writer.write_line(f'receiveErr({first_char_lower(self._channel_name)}) ({{', indentation)
+        function_writer.write_line(f'({first_char_lower(self.param)}:{self.get_labels_name()}) =>', indentation+1)
+        if isWebsite:
+            from dottygen.generator.branch import FunctionCall
+            if isinstance(self.continuation, FunctionCall):
+                function_writer.write_line(f"displayMessage += s\"Receiving type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}<br/>\"", indentation+1)
+            else:
+                function_writer.write_line(
+                    f"displayMessage += s\"Received {self._labels[0].get_name()}({self._labels[0].get_payload_receive(first_char_lower(self.param))})"
+                    f"through channel {first_char_lower(self._channel_name)}<br/>\"", indentation+1)
+        function_writer.add_print(f'Received type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}', indentation+1)
+        self.continuation.get_function_body(indentation + 1, function_writer, isWebsite)
+        function_writer.write_line(f'}},', indentation)
+        function_writer.write_line(f'{{(err : Throwable) =>', indentation)
+        function_writer.add_print(f'Receive {self.get_labels_name()} through channel {first_char_lower(self._channel_name)} TIMEOUT, activating new option', indentation + 1)
+        self._error_continuation.get_function_body(indentation + 1, function_writer, isWebsite)
+        function_writer.write_line(f'}}, Duration("5 seconds"))', indentation)
 

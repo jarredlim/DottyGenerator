@@ -13,11 +13,11 @@ class Loop(CommunicationBase):
         return [self._body]
 
     def get_type(self) -> str:
-        return f"Rec[Rec{self._role}{self._state_id}, {self._body.get_type()}]"
+        return f"Rec[Rec{self._role}_{self._state_id}, {self._body.get_type()}]"
 
     def get_function_body(self, indentation, file_writer, isWebsite):
-        file_writer.write_line(f'rec(Rec{self._role}{self._state_id}){{', indentation)
-        file_writer.add_print(f'entering loop Rec{self._role}{self._state_id}', indentation + 1)
+        file_writer.write_line(f'rec(Rec{self._role}_{self._state_id}){{', indentation)
+        file_writer.add_print(f'entering loop Rec{self._role}_{self._state_id}', indentation + 1)
         self._body.get_function_body(indentation + 1, file_writer, isWebsite)
         file_writer.write_line(f'}}', indentation)
 
@@ -34,8 +34,8 @@ class Goto(CommunicationBase):
         return []
 
     def get_type(self) -> str:
-        return f"Loop[Rec{self._role}{self._state_id}]"
+        return f"Loop[Rec{self._role}_{self._state_id}]"
 
     def get_function_body(self, indentation, file_writer, isWebsite):
-        file_writer.add_print(f'go to loop Rec{self._role}{self._state_id}', indentation)
-        file_writer.write_line(f'loop(Rec{self._role}{self._state_id})', indentation)
+        file_writer.add_print(f'go to loop Rec{self._role}_{self._state_id}', indentation)
+        file_writer.write_line(f'loop(Rec{self._role}_{self._state_id})', indentation)

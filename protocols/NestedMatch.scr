@@ -1,0 +1,17 @@
+module NestedMatch;
+
+global protocol NestedMatch(role A, role B) {
+
+    choice at A {
+        Hello()   from A to B;
+        choice at A {
+        Ok()   from A to B;
+        Confirm() from B to A;
+    } or {
+        Cancel()                from A to B;
+    }
+    } or {
+        Bye()                from A to B;
+    }
+
+}

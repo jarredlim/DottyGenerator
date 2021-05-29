@@ -206,6 +206,55 @@
                 "identifier": "Adder"
             }
         ]
+    },{
+        "filename": "Optimise1.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },{
+        "filename": "Optimise2.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },{
+        "filename": "Optimise3.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },{
+        "filename": "Optimise4.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },{
+        "filename": "Optimise5.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },{
+        "filename": "Optimise6.scr",
+        "protocols": [
+            {
+                "identifier": "Test"
+            }
+        ]
+    },{
+        "filename": "Bank3.scr",
+        "protocols": [
+            {
+                "identifier": "Bank"
+            }
+        ]
     }
 ]
 }

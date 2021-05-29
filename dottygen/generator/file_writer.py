@@ -23,9 +23,17 @@ class RecurseTypeGenerator:
        shutil.copyfile(self._recurse_template, self._recurse_output)
 
     def add_recursion(self, state_id, role):
-        new_recursion = f'sealed abstract class Rec{role}{state_id}[A]() extends RecVar[A]("{role}{state_id}")\ncase object Rec{role}{state_id} extends Rec{role}{state_id}[Unit]\n\n'
+        new_recursion = f'sealed abstract class Rec{role}_{state_id}[A]() extends RecVar[A]("{role}{state_id}")\ncase object Rec{role}_{state_id} extends Rec{role}_{state_id}[Unit]\n\n'
         self._file_writer.append_to_file(self._recurse_output, new_recursion)
 
+class FileReader:
+
+    def __init__(self, role, protocol):
+        self._file = os.path.abspath(os.path.join("protocols","protocol_fsm", protocol, f"{role}.txt"))
+
+    def get_string(self):
+        with open(self._file) as f:
+            return f.read()
 
 class FunctionWriter:
 

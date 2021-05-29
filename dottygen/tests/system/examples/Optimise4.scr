@@ -1,0 +1,37 @@
+module Test;
+
+global protocol Test(role A, role B, role C) {
+
+    choice at A{
+       Hello() from A to B;
+       choice at A{
+          Test1() from A to C;
+       } or {
+          Test2() from A to C;
+       }
+    } or {
+       Ok() from A to B;
+       Test4() from A to C;
+    } or {
+       Bye() from A to B;
+       Test3() from A to C;
+       do TestHelper(A, B, C);
+    }
+}
+
+aux global protocol TestHelper(role A, role B, role C){
+     choice at A {
+          Hello() from A to B;
+          Test1() from A to C;
+       } or {
+          Bye() from A to B;
+                  choice at A{
+                  Test2() from A to C;
+               } or {
+                  Test3() from A to C;
+               }
+       } or {
+         Ok() from A to B;
+         Test4() from A to C;
+       }
+}

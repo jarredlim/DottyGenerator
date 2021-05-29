@@ -2,7 +2,7 @@ import dotpruner
 import pydot
 import time
 
-from codegen.automata.efsm import EFSM
+from dottygen.automata.efsm import EFSM
 
 def from_file(path: str) -> EFSM:
     """Parse EFSM reprsentation from the file in specified 'path'."""

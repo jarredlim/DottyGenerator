@@ -1,0 +1,18 @@
+module Test;
+
+global protocol Test(role A, role B) {
+
+    OK() from A to B;
+    choice at A{
+       Buy() from A to B;
+       choice at A{
+       Cancel() from A to B;
+       } or {
+        Buy() from A to B;
+       }
+    } or {
+       Cancel() from A to B;
+       OK() from A to B;
+    }
+
+}

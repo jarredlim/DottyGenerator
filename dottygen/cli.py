@@ -8,8 +8,9 @@ from dottygen.automata import parser as automata_parser
 from dottygen.utils import logger, scribble, type_declaration_parser, role_parser
 from dottygen.generator import DottyGenerator
 from dottygen.generator.merger import Merger
+from dottygen.generator.err_handle_merger import ErrorDetectMerger
 from dottygen.generator.channel_generator import CaseClassGenerator, ChannelGenerator
-from dottygen.generator.file_writer import FileWriter, RecurseTypeGenerator
+from dottygen.generator.file_writer import FileReader, RecurseTypeGenerator
 from dottygen.generator.output_generator import OutputGenerator
 
 def parse_arguments(args: typing.List[str]) -> typing.Dict:
@@ -29,6 +30,10 @@ def parse_arguments(args: typing.List[str]) -> typing.Dict:
 
     parser.add_argument('--single', help='output as a single file', action='store_true')
 
+    parser.add_argument('--error', help='detect error', action='store_true')
+
+    parser.add_argument('--unop', help='unoptimised merging', action='store_true')
+
     parser.add_argument("--website", nargs='*', default=None)
 
     parsed_args = parser.parse_args(args)
@@ -44,12 +49,14 @@ def main(args: typing.List[str]) -> int:
     output_folder = parsed_args['output']
     scribble_file = parsed_args['filename']
     batch = not parsed_args['single']
+    err_detect = parsed_args['error']
     website_roles = parsed_args['website']
+    unop = parsed_args['unop']
 
-    return generate(batch, output_folder, protocol, scribble_file, website_roles)
+    return generate(batch, output_folder, protocol, scribble_file, website_roles, err_detect, unop)
 
 
-def generate(batch, output_folder, protocol, scribble_file, website, counter=Counter(), line_counter=LineCounter()):
+def generate(batch, output_folder, protocol, scribble_file, website, err_detect, unop, counter=Counter(), line_counter=LineCounter()):
     labels = set()
     channel_list = []
     efsms = {}
@@ -78,21 +85,24 @@ def generate(batch, output_folder, protocol, scribble_file, website, counter=Cou
 
     for role in all_roles:
         counter.set_role(role)
-        try:
-            message = f'Role {role} : Getting protocol from {scribble_file}'
-            with type_declaration_parser.parse(scribble_file) as custom_types:
-                start_time = time.time()
-                exit_code, output = scribble.get_graph(scribble_file, protocol, role)
-                end_time = time.time()
-                counter.add_nuscr_time(end_time - start_time)
-                if exit_code != 0:
-                    logger.FAIL(message)
-                    logger.ERROR(output)
-                    return exit_code
-                logger.SUCCESS(message)
-        except (OSError, ValueError) as error:
-            logger.ERROR(error)
-            return 1
+        if not err_detect:
+            try:
+                message = f'Role {role} : Getting protocol from {scribble_file}'
+                with type_declaration_parser.parse(scribble_file) as custom_types:
+                    start_time = time.time()
+                    exit_code, output = scribble.get_graph(scribble_file, protocol, role)
+                    end_time = time.time()
+                    counter.add_nuscr_time(end_time - start_time)
+                    if exit_code != 0:
+                        logger.FAIL(message)
+                        logger.ERROR(output)
+                        return exit_code
+                    logger.SUCCESS(message)
+            except (OSError, ValueError) as error:
+                logger.ERROR(error)
+                return 1
+        else:
+            output = FileReader(role, protocol).get_string()
 
         phase = f'Role {role} : Parse endpoint IR from Scribble output'
         try:
@@ -108,7 +118,9 @@ def generate(batch, output_folder, protocol, scribble_file, website, counter=Cou
             return 1
 
     start_time = time.time()
-    merger = Merger(efsms)
+    merger = Merger(efsms, unop)
+    if err_detect:
+        merger = ErrorDetectMerger(efsms)
     channel_map = merger.merge()
     end_time = time.time()
     counter.add_merge_time(end_time-start_time)
@@ -116,7 +128,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, counter=Cou
     for role in all_roles:
         counter.set_role(role)
         efsm = efsms[role]
-        phase = f'Role {role} : Generating Type from EFSM'
+        phase = f'Role {role} : Generating Type and Function from EFSM'
         try:
             other_roles = all_roles - set(role)
             generator = DottyGenerator(efsm=efsm, protocol=protocol, role=role, other_roles=other_roles,
@@ -147,6 +159,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, counter=Cou
             output_generator.single_output(output_folder, case_classes, channels_assign, protocol)
         else:
             output_generator.batch_output(output_folder, case_classes, channels_assign, protocol, all_roles, isWebsite, host_map)
+        logger.SUCCESS(phase)
     except (OSError, ValueError) as error:
         logger.FAIL(phase)
         logger.ERROR(error)

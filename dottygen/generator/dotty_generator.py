@@ -6,7 +6,7 @@ from dottygen.generator.base import Termination, Label
 from dottygen.generator.function import Function
 from dottygen.generator.recursion import Goto, Loop
 from dottygen.generator.branch import FunctionCall, TypeMatch, TypeMatchParam
-from dottygen.generator.channels import InChannel, OutChannel
+from dottygen.generator.channels import InChannel, OutChannel, InErrChannel
 
 from dottygen.automata.efsm import EFSM
 from dottygen.utils.type_declaration_parser import DataType
@@ -17,14 +17,12 @@ class DottyGenerator:
     _protocol: str
     _role: str
     _other_roles: typing.Iterable[str]
-    _channel_count: typing.Dict[str, int]
 
     def __init__(self, efsm : EFSM, protocol : str, role: str, other_roles: typing.Iterable[str], recurse_generator, isWebsite, host):
         self._efsm = efsm
         self._protocol = protocol
         self._role = role
         self._other_roles = other_roles
-        self._channel_count = {}
         self._function_list = []
         self._labels = set()
         self._function_count = 1
@@ -44,7 +42,6 @@ class DottyGenerator:
             return Goto(state.id, self._role), []
 
         visited[state.id] = 0
-
         assert(state.has_channel_name)
         channel_name = state.channel_name
 
@@ -53,14 +50,14 @@ class DottyGenerator:
                 continuation, channels = self._build_helper(actions[0].succ, visited)
                 self._insert_channel(channel_list, channels)
                 type = OutChannel(channel_name, [self._get_label(actions[0])], continuation=continuation,
-                                  sender=self._role, receiver=actions[0].role)
+                                  sender=self._role, receiver=actions[0].role, send_err=state.has_send_error)
             else:
                 type = Selection(channel_name)
                 for action in actions:
                     continuation, channels = self._build_helper(action.succ, visited)
                     self._insert_channel(channel_list, channels)
                     out_channel = OutChannel(channel_name, [self._get_label(action)], continuation=continuation, sender=self._role, receiver=
-                                             actions[0].role)
+                                             actions[0].role, send_err=state.has_send_error)
                     type.add_continuation(out_channel)
             self._insert_channel(channel_list, [type], True)
 
@@ -85,8 +82,12 @@ class DottyGenerator:
                     self._function_list.append(Function(new_function_name, function_body, list(channels),False))
                     channels.remove(match_channel)
             self._insert_channel(channel_list, channels)
-            type = InChannel(channel_name, labels, continuation=continuation, sender=actions[0].role, receiver=self._role)
-            type.add_lamda_param(param_name)
+            if efsm.is_error_detection_state(state):
+                err_continuation, channels = self._build_helper(state.error_detection.succ, visited)
+                self._insert_channel(channel_list, channels)
+                type = InErrChannel(channel_name, labels, param_name, continuation=continuation,err_continuation=err_continuation, sender=actions[0].role, receiver=self._role)
+            else:
+                type = InChannel(channel_name, labels, param_name, continuation=continuation, sender=actions[0].role, receiver=self._role)
             self._insert_channel(channel_list, [type], True)
 
         if visited[state.id] > 0:
@@ -125,17 +126,7 @@ class DottyGenerator:
 
     def _generate_type_match_function(self):
         self._function_count += 1
-        return self._role + str(self._function_count), f"X{self._function_count}"
-
-    def _get_channel_name(self, src:str, dest: str) -> str:
-        if src < dest:
-            channel_name = f"{src}_{dest}"
-        else :
-            channel_name = f"{dest}_{src}"
-        channel_count = self._channel_count.get(channel_name, 0)
-        channel_count+=1
-        self._channel_count[channel_name] = channel_count
-        return f"C_{channel_name}_{channel_count}"
+        return self._role +"_" + str(self._function_count), f"X_{self._function_count}"
 
     def generate_type(self):
         type = ""

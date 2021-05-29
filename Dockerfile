@@ -65,14 +65,14 @@ RUN opam init --root ${OPAMROOT} --disable-sandboxing -y \
 ##############################################################################
 
 COPY --chown=dev:dev \
-  codegen/requirements.txt /home/dev/dependencies/requirements.codegen.txt
+  dottygen/requirements.txt /home/dev/dependencies/requirements.dottygen.txt
 
 # Setup Python
 RUN add-apt-repository -y ppa:deadsnakes/ppa \
   && apt-get -y install python3.8 \
   && echo python3.8 --version
 
-RUN python3.8 -m pip install -r /home/dev/dependencies/requirements.codegen.txt
+RUN python3.8 -m pip install -r /home/dev/dependencies/requirements.dottygen.txt
 
 # Setup NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh \
@@ -109,22 +109,12 @@ RUN apt-get clean\
 
 
 ##############################################################################
-# Perf benchmarks
-##############################################################################
- COPY --chown=dev:dev \
-  benchmark /home/dev/benchmark/
-
-COPY --chown=dev:dev \
-  perf-benchmarks/requirements.txt /home/dev/dependencies/requirements.benchmarks.txt
-
-RUN python3.8 -m pip install -r /home/dev/dependencies/requirements.benchmarks.txt
-
-##############################################################################
 # Workspace setup
 ##############################################################################
 
 COPY --chown=dev:dev \
   setup /home/dev/setup
+
 
 RUN chmod +x /home/dev/setup/*
 
