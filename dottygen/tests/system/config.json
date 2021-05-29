@@ -248,6 +248,13 @@
                 "identifier": "Test"
             }
         ]
+    },{
+        "filename": "Bank3.scr",
+        "protocols": [
+            {
+                "identifier": "Bank"
+            }
+        ]
     }
 ]
 }

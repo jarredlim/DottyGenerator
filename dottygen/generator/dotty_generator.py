@@ -42,7 +42,6 @@ class DottyGenerator:
             return Goto(state.id, self._role), []
 
         visited[state.id] = 0
-
         assert(state.has_channel_name)
         channel_name = state.channel_name
 
