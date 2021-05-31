@@ -157,7 +157,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
         #print(counter.get_merge_time() + counter.get_class_time() + counter.get_efsm_time() + counter.get_type_time() + counter.get_function_time() + counter.get_nuscr_time())
         line_counter.add_case_class(labels)
         case_classes = CaseClassGenerator(labels).generate()
-        channels_assign = ChannelGenerator(channel_list, channel_map, asynchronous).generate()
+        channels_assign = ChannelGenerator(channel_list, channel_map, asynchronous or err_detect).generate()
         if not batch:
             output_generator.single_output(output_folder, case_classes, channels_assign, protocol)
         else:
