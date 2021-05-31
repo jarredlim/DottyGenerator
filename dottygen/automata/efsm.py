@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import typing
+from dottygen.automata.actions import Action
 
 from dottygen.automata.states import NonTerminalState, ReceiveState, SendState, State, TerminalState, ReceiveErrorState
 
@@ -128,6 +129,17 @@ class EFSM:
         """Return the State instance for the initial state for this EFSM."""
 
         return self[self._initial_state_id]
+
+    def add_modified_receive(self, state: ReceiveState, label):
+        dst = str(max([int(state1.id) for state1 in self._states.values()] + [int(terminal_state) for terminal_state in self._terminal_state_id]) + 1)
+        term_state = TerminalState(dst)
+        term_state.set_unreachable()
+        self._terminal_state_id.add(dst)
+        self._states[dst] = term_state
+        action = Action.parse(label, state.id, dst)
+        action.succ = term_state
+        state.add_action(action)
+
 
     def has_terminal_state(self) -> bool:
         """Return true iff this EFSM has a terminal state."""

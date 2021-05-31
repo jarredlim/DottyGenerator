@@ -1,10 +1,11 @@
 import copy
-from dottygen.automata.actions import ReceiveErrorAction
+from dottygen.automata.actions import ReceiveErrorAction, ReceiveAction
 
 class ErrorDetectMerger():
 
-    def __init__(self,efsms):
+    def __init__(self,efsms, unop=True):
         self._efsms = efsms
+        self._unop = unop
 
     def _get_id_string(self, role,state):
         return f"{role}_{state.id}"
@@ -29,12 +30,6 @@ class ErrorDetectMerger():
                return list(state2.actions)[0].role == role1
            elif role2 in crashedSet and efsm1.is_error_detection_state(state1):
                return list(state1.actions)[0].role == role2
-           # elif state1 is None and efsm2.is_send_state(state2):
-           #     return list(state2.actions)[0].role == role1
-           # elif state2 is None and efsm1.is_send_state(state1):
-           #     return list(state1.actions)[0].role == role2
-           # elif state1 is None or state2 is None:
-           #     return False
            elif efsm1.is_terminal_state(state1) and efsm2.is_error_detection_state(state2):
                return list(state2.actions)[0].role == role1
            elif efsm2.is_terminal_state(state2) and efsm1.is_error_detection_state(state1):
@@ -62,17 +57,18 @@ class ErrorDetectMerger():
                 return i
         return -1
 
-    def _get_map_index(self, channel_map, state1, state2, combine_map, labels, channel_names, role1, role2):
+    def _get_map_index(self, channel_map, state1, state2, combine_map, labels, channel_names, role1, role2, unop):
         for i in range(len(channel_map)):
             if self._get_id_string(role1, state1) in list(channel_names.keys()) and channel_names[self._get_id_string(role1, state1)] in channel_map[i][0]:
                     return i
             if self._get_id_string(role2, state2) in list(channel_names.keys()) and channel_names[self._get_id_string(role2, state2)] in channel_map[i][0]:
                     return i
-            for chan_name in list(combine_map.values()):
-                if chan_name in channel_map[i][0]:
+            if not unop:
+                for chan_name in list(combine_map.values()):
+                    if chan_name in channel_map[i][0]:
+                        return i
+                if labels == channel_map[i][1] and len(labels) > 0:
                     return i
-            if labels == channel_map[i][1] and len(labels) > 0:
-                return i
         return -1
 
     def _match_channels(self,state, channel_list, efsm, curr_labels, count, role1, role2, channel_names):
@@ -112,7 +108,7 @@ class ErrorDetectMerger():
         return True, channel_map, count
 
 
-    def _merge_states(self, states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet):
+    def _merge_states(self, states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads):
 
         if self._all_is_visited_none_terminal(states, efsms, visited_set, crashedSet):
             return
@@ -135,7 +131,7 @@ class ErrorDetectMerger():
                         for action in list(state_i.actions):
                             new_states = copy.deepcopy(states)
                             new_states[roles[i]] = action.succ
-                            self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                            self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
                         visited_set.remove(self._get_id_string(roles[i], state_i))
                         return
 
@@ -144,7 +140,7 @@ class ErrorDetectMerger():
                         for action in list(state_j.actions):
                             new_states = copy.deepcopy(states)
                             new_states[roles[j]] = action.succ
-                            self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                            self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
                         visited_set.remove(self._get_id_string(roles[j], state_j))
                         return
 
@@ -154,7 +150,7 @@ class ErrorDetectMerger():
                             visited_set.add(self._get_id_string(roles[i], state_i))
                         new_states = copy.deepcopy(states)
                         new_states[roles[j]] = state_j.error_detection.succ
-                        self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                        self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
                         visited_set.remove(self._get_id_string(roles[j], state_j))
                         if not roles[i] in crashedSet:
                             visited_set.remove(self._get_id_string(roles[i], state_i))
@@ -165,7 +161,7 @@ class ErrorDetectMerger():
                             visited_set.add(self._get_id_string(roles[j], state_j))
                         new_states = copy.deepcopy(states)
                         new_states[roles[i]] = state_i.error_detection.succ
-                        self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                        self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
                         visited_set.remove(self._get_id_string(roles[i], state_i))
                         if not roles[j] in crashedSet:
                             visited_set.remove(self._get_id_string(roles[j], state_j))
@@ -176,7 +172,7 @@ class ErrorDetectMerger():
                         for action in list(state_j.actions):
                             new_states = copy.deepcopy(states)
                             new_states[roles[j]] = action.succ
-                            self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                            self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
                         visited_set.remove(self._get_id_string(roles[i], state_i))
                         visited_set.remove(self._get_id_string(roles[j], state_j))
 
@@ -186,7 +182,7 @@ class ErrorDetectMerger():
                         for action in list(state_i.actions):
                             new_states = copy.deepcopy(states)
                             new_states[roles[i]] = action.succ
-                            self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                            self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
                         visited_set.remove(self._get_id_string(roles[i], state_i))
                         visited_set.remove(self._get_id_string(roles[j], state_j))
 
@@ -206,23 +202,39 @@ class ErrorDetectMerger():
                                                                                   .keys()) else []
 
 
-                         has_matched_i, new_chan_name_i, countij = self._match_channels(state_i, channel_list_ij, efsms_i,
+                         if not unop:
+                            has_matched_i, new_chan_name_i, countij = self._match_channels(state_i, channel_list_ij, efsms_i,
                                                                                       new_labels, countij, roles[i], roles[j], channel_names)
-                         has_matched_j, new_chan_name_j, countji = self._match_channels(state_j, channel_list_ji, efsms_j,
+                            has_matched_j, new_chan_name_j, countji = self._match_channels(state_j, channel_list_ji, efsms_j,
                                                                                       new_labels, countji, roles[j], roles
                                                                                       [i], channel_names)
+                            combine_map = copy.deepcopy(new_chan_name_i)
+                            combine_map.update(new_chan_name_j)
 
-                         combine_map = copy.deepcopy(new_chan_name_i)
-                         combine_map.update(new_chan_name_j)
+                         else:
+                             combine_map = {}
+                             has_matched_i = False
+                             has_matched_j = False
+
 
                          map_ij = channel_map[ij_set] if ij_set in list(
                              channel_map.keys()) else []
 
-                         map_index = self._get_map_index(map_ij, state_i, state_j, combine_map, new_labels, channel_names, roles[i], roles[j])
+                         map_index = self._get_map_index(map_ij, state_i, state_j, combine_map, new_labels, channel_names, roles[i], roles[j], unop)
 
                          channel_set = set()
+                         labels = new_labels
                          if map_index != -1:
                              channel_set, labels = map_ij.pop(map_index)
+
+                         add_chan_name = False
+
+                         if labels != new_labels:
+                             if len(labels) < len(new_labels):
+                                 for chan in channel_set:
+                                     modify_map[chan] = copy.deepcopy(new_labels)
+                             else:
+                                  add_chan_name = True
 
                          is_send_error = False
                          if efsms_i.is_error_detection_state(state_i) or efsms_j.is_error_detection_state(state_j):
@@ -232,9 +244,13 @@ class ErrorDetectMerger():
                              chan_name = new_chan_name_i[frozenset([action.label for action in state_i.actions])]
                              channel_names[self._get_id_string(roles[i], state_i)] = chan_name
                              channel_set.add(chan_name)
+                             if add_chan_name:
+                                 modify_map[chan_name] = copy.deepcopy(labels)
                          elif not efsms_i.is_terminal_state(state_i) and not self._get_id_string(roles[i], state_i) in list(channel_names.keys()):
                              channel_name = self._generate_channel_name(countij, roles[i], roles[j])
                              channel_set.add(channel_name)
+                             if add_chan_name:
+                                 modify_map[channel_name] = copy.deepcopy(labels)
                              channel_names[self._get_id_string(roles[i], state_i)] = channel_name
                              countij += 1
                          if efsms_i.is_send_state(state_i) and is_send_error:
@@ -244,10 +260,14 @@ class ErrorDetectMerger():
                              chan_name = new_chan_name_j[frozenset([action.label for action in state_j.actions])]
                              channel_names[self._get_id_string(roles[j], state_j)] = chan_name
                              channel_set.add(chan_name)
+                             if add_chan_name:
+                                 modify_map[chan_name] = copy.deepcopy(labels)
                          elif not efsms_j.is_terminal_state(state_j) and not self._get_id_string(roles[j], state_j) in list(channel_names.keys()):
                              channel_name = self._generate_channel_name(countji, roles[j], roles[i])
                              channel_set.add(channel_name)
                              channel_names[self._get_id_string(roles[j], state_j)] = channel_name
+                             if add_chan_name:
+                                 modify_map[channel_name] = copy.deepcopy(labels)
                              countji += 1
                          if efsms_j.is_send_state(state_j) and is_send_error:
                              state_j.set_send_error()
@@ -267,10 +287,11 @@ class ErrorDetectMerger():
                          for action_i in list(state_i.actions):
                              for action_j in list(state_j.actions):
                                  if action_i.label == action_j.label:
+                                     payloads[action_i.label] = action_i.payloads
                                      new_states = copy.deepcopy(states)
                                      new_states[roles[i]] = action_i.succ
                                      new_states[roles[j]] = action_j.succ
-                                     self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                                     self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
 
                          if efsms_i.is_error_detection_state(state_i):
                              crashedSet.add(roles[j])
@@ -278,7 +299,7 @@ class ErrorDetectMerger():
                                  new_states = copy.deepcopy(states)
                                  new_states[roles[i]] = state_i.error_detection.succ
                                  new_states[roles[j]] = action.succ
-                                 self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                                 self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
                              crashedSet.remove(roles[j])
 
 
@@ -288,7 +309,7 @@ class ErrorDetectMerger():
                                  new_states = copy.deepcopy(states)
                                  new_states[roles[j]] = state_j.error_detection.succ
                                  new_states[roles[i]] = action.succ
-                                 self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet)
+                                 self._merge_states(new_states, efsms, count_map, channel_map, visited_set, channel_list, channel_names, crashedSet, unop, modify_map, payloads)
                              crashedSet.remove(roles[i])
 
                          visited_set.remove(self._get_id_string(roles[i], state_i))
@@ -316,15 +337,41 @@ class ErrorDetectMerger():
          visited.remove(state.id)
 
 
+    def _modify_states(self, state, efsm, role, channel_names, modify_map, payloads, visited):
+         if state.id in visited or efsm.is_terminal_state(state):
+             return
+         visited.add(state.id)
+         if self._get_id_string(role, state) in list(channel_names.keys()) and \
+                 channel_names[self._get_id_string(role, state)] in list(modify_map.keys()):
+             all_labels = modify_map[channel_names[self._get_id_string(role, state)]]
+             for label in all_labels:
+                 if label not in [action.label for action in state.actions]:
+                     efsm.add_modified_receive(state, f"{list(state.actions)[0].role}?{label}({','.join(payloads[label])})")
+         for action in list(state.actions):
+             self._modify_states(action.succ, efsm, role, channel_names, modify_map, payloads, visited)
+         if efsm.is_error_detection_state(state):
+             self._modify_states(state.error_detection.succ, efsm, role, channel_names, modify_map, payloads, visited)
+         visited.remove(state.id)
+
 
     def merge(self):
         channel_map = {}
         channel_names = {}
+        modify_map = {}
         all_init_states = {}
+        payloads = {}
         keys = list(self._efsms.keys())
         for i in range(len(keys)):
            all_init_states[keys[i]] = self._efsms[keys[i]][self._efsms[keys[i]].initial_state.id]
-        self._merge_states(all_init_states, self._efsms, {}, channel_map, set(), {}, channel_names, set())
+        self._merge_states(all_init_states, self._efsms, {}, channel_map, set(), {}, channel_names, set(), False, modify_map, payloads)
+
+        for i in range(len(keys)):
+            self._modify_states(self._efsms[keys[i]][self._efsms[keys[i]].initial_state.id],
+                                       self._efsms[keys[i]], keys[i], channel_names, modify_map
+                                       ,payloads, set())
+        for i in range(len(keys)):
+           all_init_states[keys[i]] = self._efsms[keys[i]][self._efsms[keys[i]].initial_state.id]
+        self._merge_states(all_init_states, self._efsms, {}, channel_map, set(), {}, channel_names, set(), self._unop, modify_map, payloads)
 
         for i in range(len(keys)):
            self._assign_channel_names(self._efsms[keys[i]][self._efsms[keys[i]].initial_state.id], self._efsms[keys[i]], keys[i], channel_names

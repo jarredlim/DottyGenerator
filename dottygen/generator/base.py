@@ -120,6 +120,9 @@ class Label():
 
 class Termination(CommunicationBase):
 
+    def __init__(self, unreachable=False):
+        self._unreachable = unreachable
+
     def get_type(self) -> str:
         return "PNil"
 
@@ -130,4 +133,6 @@ class Termination(CommunicationBase):
         function_writer.add_print("Terminating...", indentation)
         if isWebsite:
             function_writer.write_line('server.stop(0)', indentation)
+        if self._unreachable:
+            function_writer.write_line('throw Exception("This branch should not be reached! Please check your communication!")', indentation)
         function_writer.write_line('nil', indentation)

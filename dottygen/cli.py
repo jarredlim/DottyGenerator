@@ -123,7 +123,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
     start_time = time.time()
     merger = Merger(efsms, unop)
     if err_detect:
-        merger = ErrorDetectMerger(efsms)
+        merger = ErrorDetectMerger(efsms, unop)
     channel_map = merger.merge()
     end_time = time.time()
     counter.add_merge_time(end_time-start_time)

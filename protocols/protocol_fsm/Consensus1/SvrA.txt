@@ -1,0 +1,58 @@
+digraph G {
+  0;
+  1;
+  2;
+  3;
+  4;
+  5;
+  6;
+  7;
+  8;
+  9;
+  10;
+  11;
+  12;
+  13;
+  14;
+  15;
+  16;
+  17;
+  18;
+  19;
+  20;
+  21;
+
+
+  0 -> 1 [label="Svr?propose()", ];
+
+  1 -> 2 [label="Svr!accept()",]
+
+  2 -> 3 [label="SvrB?request()", ];
+
+  3 -> 4 [label="SvrB!granted()", ];
+  4 -> 5 [label="SvrB?accept()", ];
+  4 -> 6 [label="SvrB?reject()", ];
+  4 -> 7 [label="SvrB#", ];
+
+  2 -> 8 [label="SvrB?nothing()", ];
+
+  2 -> 9 [label="SvrB#", ];
+
+  1 -> 10 [label="Svr!reject()",];
+
+  10 -> 11 [label="SvrB?request()", ];
+
+  11 -> 12 [label="SvrB!granted()", ];
+  12 -> 13 [label="SvrB?accept()", ];
+  12 -> 14 [label="SvrB?reject()", ];
+  12 -> 15 [label="SvrB#", ];
+
+  10 -> 16 [label="SvrB?nothing()", ];
+
+  10 -> 17 [label="SvrB#", ];
+
+  0 -> 18 [label="Svr#",];
+  18 -> 19 [label="SvrB?request()", ];
+  19 -> 20 [label="SvrB!declined()", ];
+  18 -> 21 [label="SvrB#", ];
+  }

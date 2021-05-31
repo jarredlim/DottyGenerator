@@ -1,0 +1,5 @@
+module Consensus1;
+
+global protocol Consensus1(role Client, role Svr, role SvrA, role SvrB) {
+
+}

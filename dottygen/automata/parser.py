@@ -35,7 +35,6 @@ def _parse_graph(graph: pydot.Graph) -> EFSM:
         src = edge.get_source()
         dst = edge.get_destination()
         label = _extract(edge.get_label())
-
         action = Action.parse(label, src, dst)
         action.add_to_efsm(efsm)
     

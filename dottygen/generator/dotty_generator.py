@@ -33,7 +33,7 @@ class DottyGenerator:
     def _build_helper(self, state, visited):
         efsm = self._efsm
         if efsm.is_terminal_state(state):
-            return Termination(),[]
+            return Termination(state.is_unreachable),[]
         actions = list(state.actions)
         channel_list = []
 
@@ -69,7 +69,7 @@ class DottyGenerator:
             else:
                 is_all_terminal = True
                 for action in actions:
-                    if not efsm.is_terminal_state(action.succ):
+                    if not efsm.is_terminal_state(action.succ) or action.succ.is_unreachable:
                         is_all_terminal = False
                 if is_all_terminal:
                     continuation, channels = Termination(), []

@@ -2,7 +2,7 @@ import copy
 
 class Merger():
 
-    def __init__(self,efsms, unop=False):
+    def __init__(self,efsms, unop=True):
         self._efsms = efsms
         self._unop = unop
 

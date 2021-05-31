@@ -7,6 +7,7 @@ class State(ABC):
         super().__init__()
         self._id = state_id
         self._is_set_channel = False
+        self._is_unreachable = False
         self._error_detection = False
         self._send_error = False
 
@@ -34,6 +35,12 @@ class State(ABC):
 
         return self._send_error
 
+    @property
+    def is_unreachable(self):
+        """Return state identifier."""
+
+        return self._is_unreachable
+
     def __str__(self):
         return self.id
 
@@ -47,6 +54,8 @@ class State(ABC):
     def set_send_error(self):
         self._send_error = True
 
+    def set_unreachable(self):
+        self._is_unreachable = True
 
 class TerminalState(State):
     pass
