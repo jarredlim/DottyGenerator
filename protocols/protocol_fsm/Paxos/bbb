@@ -1,0 +1,13 @@
+58 -> 59 [label="A!propose(number)", ];
+  59 -> 60 [label="A?promise(number)", ];
+  60 -> 61 [label="A!accept(number, number)", ];
+  61 -> 62 [label="A?accepted()", ];
+  62 -> 63 [label="Client!Succeed()", ];
+
+  61 -> 58 [label="A?Nack(number)", ];
+  61 -> 64 [label="A#", ];
+  64 -> 65 [label="Client!Failed()", ];
+
+  59 -> 58 [label="A?Nack(number)", ];
+  59 -> 66 [label="A#", ];
+  66 -> 67 [label="Client!Failed()"];

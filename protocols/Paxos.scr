@@ -1,0 +1,4 @@
+module Paxos;
+
+global protocol Paxos(role Svr, role Client, role Writer, role A, role B) {
+}

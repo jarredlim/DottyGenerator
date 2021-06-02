@@ -1,0 +1,6 @@
+module Broadcast;
+
+global protocol Broadcast(role C, role A, role B)
+{
+
+}

@@ -1,0 +1,9 @@
+digraph G {
+  0;
+  1;
+  2;
+
+
+  0 -> 1 [label="B!data(number)", ];
+  1 -> 2 [label="C!data(number)", ];
+  }
