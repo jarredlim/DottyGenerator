@@ -1,0 +1,255 @@
+digraph G {
+  0;
+  1;
+  2;
+  3;
+  4;
+  5;
+  6;
+  7;
+  8;
+  9;
+  10;
+  11;
+  12;
+  13;
+  14;
+  15;
+  16;
+  17;
+  18;
+  19;
+  20;
+  21;
+  22;
+  23;
+  24;
+  25;
+  26;
+  27;
+  28;
+  29;
+  30;
+  31;
+  32;
+  33;
+  34;
+  35;
+  36;
+  37;
+  38;
+  39;
+  40;
+  41;
+  42;
+  43;
+  44;
+  45;
+  46;
+  47;
+  48;
+  49;
+  50;
+  51;
+  52;
+  53;
+  54;
+  55;
+  56;
+  57;
+  58;
+  59;
+  60;
+  61;
+  62;
+  63;
+  64;
+  65;
+  66;
+  67;
+  68;
+  69;
+  70;
+  71;
+  72;
+  73;
+  74;
+  75;
+  76;
+  77;
+  78;
+  79;
+  80;
+  81;
+  82;
+  83;
+  84;
+  85;
+  86;
+  87;
+  88;
+  89;
+  90;
+  91;
+  92;
+  93;
+  94;
+  95;
+  96;
+  97;
+
+  0 -> 1 [label="S?attack()", ];
+  1 -> 2 [label="A?attack()", ];
+  2 -> 3 [label="B?attack()", ];
+
+  3 -> 4 [label="A!attack()", ];
+
+  4 -> 5 [label="B!attack()", ];
+  4 -> 6 [label="B!nothing()", ];
+
+  3 -> 7 [label="A!nothing()", ];
+
+  7 -> 8 [label="B!attack()", ];
+  7 -> 9 [label="B!nothing()", ];
+
+  2 -> 10 [label="B#", ];
+
+  10 -> 11 [label="A!attack()", ];
+
+  11 -> 12 [label="B!attack()", ];
+  11 -> 13 [label="B!nothing()", ];
+
+  10 -> 14 [label="A!nothing()", ];
+
+  14 -> 15 [label="B!attack()", ];
+  14 -> 16 [label="B!nothing()", ];
+
+  1 -> 17 [label="A#", ];
+  17 -> 18 [label="B?attack()", ];
+
+  18 -> 19 [label="A!attack()", ];
+
+  19 -> 20 [label="B!attack()", ];
+  19 -> 21 [label="B!nothing()", ];
+
+  18 -> 22 [label="A!nothing()", ];
+
+  22 -> 23 [label="B!attack()", ];
+  22 -> 24 [label="B!nothing()", ];
+
+  17 -> 25 [label="B#", ];
+
+  25 -> 26 [label="A!attack()", ];
+
+  26 -> 27 [label="B!attack()", ];
+  26 -> 28 [label="B!nothing()", ];
+
+  25 -> 29 [label="A!nothing()", ];
+
+  29 -> 30 [label="B!attack()", ];
+  29 -> 31 [label="B!nothing()", ];
+
+  0 -> 32 [label="S?nothing()", ];
+  32 -> 33 [label="A?nothing()", ];
+  33 -> 34 [label="B?nothing()", ];
+
+  34 -> 35 [label="A!attack()", ];
+
+  35 -> 36 [label="B!attack()", ];
+  35 -> 37 [label="B!nothing()", ];
+
+  34 -> 38 [label="A!nothing()", ];
+
+  38 -> 39 [label="B!attack()", ];
+  38 -> 40 [label="B!nothing()", ];
+
+  33 -> 41 [label="B#", ];
+
+  41 -> 42 [label="A!attack()", ];
+
+  42 -> 43 [label="B!attack()", ];
+  42 -> 44 [label="B!nothing()", ];
+
+  41 -> 45 [label="A!nothing()", ];
+
+  45 -> 46 [label="B!attack()", ];
+  45 -> 47 [label="B!nothing()", ];
+
+  32 -> 48 [label="A#", ];
+  48 -> 49 [label="B?nothing()", ];
+
+  49 -> 50 [label="A!attack()", ];
+
+  50 -> 51 [label="B!attack()", ];
+  50 -> 52 [label="B!nothing()", ];
+
+  49 -> 53 [label="A!nothing()", ];
+
+  53 -> 54 [label="B!attack()", ];
+  53 -> 55 [label="B!nothing()", ];
+
+  48 -> 56 [label="B#", ];
+
+  56 -> 57 [label="A!attack()", ];
+
+  57 -> 58 [label="B!attack()", ];
+  57 -> 59 [label="B!nothing()", ];
+
+  56 -> 60 [label="A!nothing()", ];
+
+  60 -> 61 [label="B!attack()", ];
+  60 -> 62 [label="B!nothing()", ];
+
+   0 -> 63 [label="S#", ];
+   63 -> 64 [label="A?attack()", ];
+   64 -> 65 [label="B?attack()", ];
+
+   65 -> 66 [label="A!attack()", ];
+
+  66 -> 67 [label="B!attack()", ];
+  66 -> 68 [label="B!nothing()", ];
+
+  65 -> 69 [label="A!nothing()", ];
+
+  69 -> 70 [label="B!attack()", ];
+  69 -> 71 [label="B!nothing()", ];
+
+  64 -> 72 [label="B#", ];
+
+  72 -> 73 [label="A!attack()", ];
+  73 -> 74 [label="B!nothing()", ];
+
+  72 -> 75 [label="A!nothing()", ];
+  75 -> 76 [label="B!nothing()", ];
+
+   63 -> 77 [label="A?nothing()", ];
+   77 -> 78 [label="B?nothing()", ];
+   78 -> 79 [label="A!nothing()", ];
+  79 -> 80 [label="B!nothing()", ];
+
+  77 -> 81 [label="B#", ];
+  81 -> 82 [label="A!nothing()", ];
+  82 -> 83 [label="B!nothing()", ];
+
+  63 -> 84 [label="A#", ];
+  84 -> 85 [label="B?attack()", ];
+
+  85 -> 86 [label="A!attack()", ];
+
+  86 -> 87 [label="B!attack()", ];
+  86 -> 88 [label="B!nothing()", ];
+
+  85 -> 89 [label="A!nothing()", ];
+
+  89 -> 90 [label="B!attack()", ];
+  89 -> 91 [label="B!nothing()", ];
+
+  84 -> 92 [label="B?nothing()", ];
+  92 -> 93 [label="A!nothing()", ];
+  93 -> 94 [label="B!nothing()", ];
+
+  84 -> 95 [label="B#", ];
+  95 -> 96 [label="A!nothing()", ];
+  96 -> 97 [label="B!nothing()", ];
+
+  }

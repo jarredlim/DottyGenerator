@@ -1,0 +1,21 @@
+module BuyerChoice;
+
+global protocol BuyerChoice(role A, role B) {
+
+    choice at A {
+        Item1()   from A to B;
+        choice at A {
+        Buy1()   from A to B;
+    } or {
+        Cancel1()   from A to B;
+    }
+    } or {
+        Item2()   from A to B;
+        choice at A {
+        Buy2()   from A to B;
+    } or {
+        Cancel2()   from A to B;
+    }
+    }
+
+}

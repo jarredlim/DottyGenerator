@@ -18,6 +18,10 @@ digraph G {
   25;
   26;
   27;
+  28;
+  29;
+  31;
+  33;
   35;
   36;
   38;
@@ -64,6 +68,13 @@ digraph G {
   0 -> 25 [label="S?nothing()", ];
   25 -> 26 [label="B!nothing()", ];
   26 -> 27 [label="C!nothing()", ];
+
+  27 -> 28 [label="B?attack()", ];
+  28 -> 29 [label="C?attack()", ];
+
+  28 -> 31 [label="C?nothing()",];
+
+  28 -> 33 [label="C#",];
 
   27 -> 35 [label="B?nothing()", ];
   35 -> 36 [label="C?attack()", ];

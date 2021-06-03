@@ -80,10 +80,10 @@
         ]
     },
     {
-        "filename": "Calculator.scr",
+        "filename": "MultipleSend.scr",
         "protocols": [
             {
-                "identifier": "Calculator"
+                "identifier": "BuyerChoice"
             }
         ]
     },
@@ -194,13 +194,6 @@
         ]
     },{
         "filename": "AdderSub.scr",
-        "protocols": [
-            {
-                "identifier": "Adder"
-            }
-        ]
-    },{
-        "filename": "AdderUltimate.scr",
         "protocols": [
             {
                 "identifier": "Adder"

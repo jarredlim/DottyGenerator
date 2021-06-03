@@ -1,0 +1,35 @@
+digraph G {
+  0;
+  1;
+  2;
+  3;
+  4;
+  5;
+  6;
+  7;
+  8;
+  9;
+  10;
+  11;
+  12;
+  13;
+  14;
+
+  0 -> 1 [label="A!attack()", ];
+  1 -> 2 [label="B!attack()", ];
+  2 -> 3 [label="C!attack()", ];
+
+  2 -> 4 [label="C!nothing()", ];
+  1 -> 5 [label="B!nothing()", ];
+  5 -> 6 [label="C!attack()", ];
+  5 -> 7 [label="C!nothing()", ];
+
+  0 -> 8 [label="A!nothing()", ];
+  8 -> 9 [label="B!attack()", ];
+  9 -> 10 [label="C!attack()", ];
+
+  9 -> 11 [label="C!nothing()", ];
+  8 -> 12  [label="B!nothing()", ];
+  12 -> 13 [label="C!attack()", ];
+  12 -> 14 [label="C!nothing()", ];
+  }

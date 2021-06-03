@@ -1,0 +1,4 @@
+module Byzantine2;
+
+global protocol Byzantine2(role A, role B, role C, role S) {
+}
