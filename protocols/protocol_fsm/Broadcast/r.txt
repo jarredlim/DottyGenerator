@@ -1,0 +1,22 @@
+digraph G {
+  0;
+  1;
+  2;
+  3;
+  4;
+  5;
+  6;
+  7;
+
+
+  0 -> 1 [label="p?data(number)", ];
+  1 -> 2 [label="q!ok()", ];
+
+  0 -> 3 [label = "p#",];
+  3 -> 4 [label="q!req()", ];
+  4 -> 5 [label="q?ko()", ];
+  4 -> 6 [label="q?data(number)", ];
+  4 -> 7 [label = "q#",];
+
+
+  }

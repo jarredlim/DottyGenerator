@@ -70,9 +70,12 @@ digraph G {
   68;
   69;
   70;
-
+  71;
+  72;
 
   0 -> 1 [label="Client?Request()", ];
+  0 -> 71 [label="Client#", ];
+  71 -> 72 [label="Client!Failed()", ];
 
   1 -> 2 [label="A!Propose()", ];
   2 -> 3 [label="B!Propose()", ];

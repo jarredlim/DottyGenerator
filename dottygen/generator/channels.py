@@ -99,8 +99,7 @@ class InChannel(ChannelInstance):
         function_writer.write_line(f'receive({first_char_lower(self._channel_name)}) {{', indentation)
         function_writer.write_line(f'({first_char_lower(self.param)}:{self.get_labels_name()}) =>', indentation+1)
         if isWebsite:
-            from dottygen.generator.branch import FunctionCall
-            if isinstance(self.continuation, FunctionCall):
+            if len(self._labels) > 1:
                 function_writer.write_line(f"displayMessage += s\"Receiving type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}<br/>\"", indentation+1)
             else:
                 function_writer.write_line(
@@ -129,8 +128,7 @@ class InErrChannel(ChannelInstance):
         function_writer.write_line(f'receiveErr({first_char_lower(self._channel_name)}) ({{', indentation)
         function_writer.write_line(f'({first_char_lower(self.param)}:{self.get_labels_name()}) =>', indentation+1)
         if isWebsite:
-            from dottygen.generator.branch import FunctionCall
-            if isinstance(self.continuation, FunctionCall):
+            if len(self._labels) > 1:
                 function_writer.write_line(f"displayMessage += s\"Receiving type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)}<br/>\"", indentation+1)
             else:
                 function_writer.write_line(
@@ -140,6 +138,13 @@ class InErrChannel(ChannelInstance):
         self.continuation.get_function_body(indentation + 1, function_writer, isWebsite)
         function_writer.write_line(f'}},', indentation)
         function_writer.write_line(f'{{(err : Throwable) =>', indentation)
+        if isWebsite:
+            if len(self._labels) > 1:
+                function_writer.write_line(f"displayMessage += s\"Receive type {self.get_labels_name()} through channel {first_char_lower(self._channel_name)} TIMEOUT, activating new option<br/>\"", indentation+1)
+            else:
+                function_writer.write_line(
+                    f"displayMessage += s\"Receive {self._labels[0].get_name()}({self._labels[0].get_payload_receive(first_char_lower(self.param))})"
+                    f"through channel {first_char_lower(self._channel_name)} TIMEOUT, activating new option<br/>\"", indentation+1)
         function_writer.add_print(f'Receive {self.get_labels_name()} through channel {first_char_lower(self._channel_name)} TIMEOUT, activating new option', indentation + 1)
         self._error_continuation.get_function_body(indentation + 1, function_writer, isWebsite)
         function_writer.write_line(f'}}, Duration("5 seconds"))', indentation)

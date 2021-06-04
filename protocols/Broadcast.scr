@@ -1,6 +1,6 @@
 module Broadcast;
 
-global protocol Broadcast(role C, role A, role B)
+global protocol Broadcast(role p, role q, role r)
 {
 
 }
