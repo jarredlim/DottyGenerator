@@ -78,10 +78,10 @@ class Label():
         output = f"{self._name}("
         for i in range(len(self._payload)):
             if "number" in self._payload[i] or "Int" in self._payload[i]:
-                output += str(randrange(100))
+                output += "-1"
             elif "string" in self._payload[i] or "String" in self._payload[i]:
                 output_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
-                output += f'"{output_string}"'
+                output += f'"REPLACE_ME"'
             elif "date" in self._payload[i] or "Date" in self._payload[i]:
                 output += f'new Date()'
             if i != len(self._payload) - 1:

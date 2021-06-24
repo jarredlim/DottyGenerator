@@ -6,9 +6,12 @@ from dottygen.automata import parser as automata_parser
 from dottygen.utils import scribble, logger, role_parser, type_declaration_parser
 from dottygen.generator import DottyGenerator
 from dottygen.generator.file_writer import RecurseTypeGenerator
-from dottygen.generator.choices import Selection, FunctionLambda, TypeMatch, Function, Termination, Goto, Loop
+from dottygen.generator.selection import Selection
+from dottygen.generator.branch import FunctionCall, TypeMatch
+from dottygen.generator.recursion import Loop, Goto
+from dottygen.generator.function import Function
+from dottygen.generator.base import Termination, Label
 from dottygen.generator.channels import InChannel, OutChannel
-from dottygen.generator.types import Label
 
 def get_test_class(filename, protocol):
 
@@ -121,7 +124,7 @@ def get_test_class(filename, protocol):
             return results
 
         def _get_function(self, function_lambda):
-            self.assertIsInstance(function_lambda, FunctionLambda)
+            self.assertIsInstance(function_lambda, FunctionCall)
             self.assertEqual(len(function_lambda.get_continuation()), 0)
             next_function_name = function_lambda.get_function_name()
             function_count = 0

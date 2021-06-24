@@ -1,15 +1,13 @@
 module Dummy;
 
-global protocol Dummy(role Client, role Svr) {
+global protocol Dummy(role p, role q) {
 
-    choice at Client {
-        Test1(number, number) from Client to Svr;
-        Test2(number) from Svr to Client;
-        do Dummy(Svr, Client);
+    choice at p {
+        Hello() from p to q;
     } or {
-        Test3(number, number) from Client to Svr;
-        Test4(number) from Svr to Client;
-        do Dummy(Svr, Client);
+        Bye() from p to q;
+    } or {
+       Cancel() from p to q;
     }
 
 }

@@ -67,11 +67,11 @@ class OutChannel(ChannelInstance):
             function_writer.write_line("canRelease = true", indentation)
             function_writer.write_line("semaphore.acquire", indentation)
 
-        function_writer.add_print(f'Sending {self.get_labels_name()} through channel {first_char_lower(self.get_channel_name())}',
-                indentation)
         if self._send_err:
             function_writer.write_line(
                 f'if(false){{throw Exception("Some exception")}}',
+                indentation)
+        function_writer.add_print(f'Sending {self.get_labels_name()} through channel {first_char_lower(self.get_channel_name())}',
                 indentation)
         if isWebsite:
             function_writer.write_line(f'send({first_char_lower(self.get_channel_name())},{self._labels[0].get_payload_assign_string()}) >> {{',

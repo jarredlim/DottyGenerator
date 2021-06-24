@@ -9,5 +9,4 @@ global protocol Adder(role Client, role Svr) {
     } or {
         QUIT()                from Client to Svr;
     }
-
 }
