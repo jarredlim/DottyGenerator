@@ -1,6 +1,46 @@
-module Broadcast;
+(*# ErrorHandlingCrashBranch #*)
 
-global protocol Broadcast(role p, role q, role r)
-{
-
+global protocol Broadcast(role p, role q, role r) {
+  choice at p {
+    Data(x : number) from p to q;
+    choice at p {
+      Data(x : number) from p to r;
+      choice at r {
+        Ok(x : number) from r to q;
+      } or {
+        crash from r to q;
+      }
+    } or {
+      crash from p to r;
+      choice at r {
+        req(x : number) from r to q;
+        choice at q {
+          Data(x : number) from q to r;
+        } or {
+          Ko(x : number) from q to r; // impossible but needed due to merging
+        } or {
+          crash from q to r;
+        }
+      } or {
+        crash from r to q;
+      }
+    }
+  } or {
+    crash from p to q;
+    choice at p {
+      crash from p to r;
+      choice at r {
+        req(x : number) from r to q;
+        choice at q {
+          Data(x : number) from q to r; // impossible but needed due to merging
+        } or {
+          Ko(x : number) from q to r;
+        } or {
+          crash from q to r;
+        }
+      } or {
+        crash from r to q;
+      }
+    }
+  }
 }

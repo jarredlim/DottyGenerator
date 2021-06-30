@@ -32,6 +32,8 @@ def parse_arguments(args: typing.List[str]) -> typing.Dict:
 
     parser.add_argument('--error', help='detect error', action='store_true')
 
+    parser.add_argument('--fn', help='use nuscr output (for error only)', action='store_true')
+
     parser.add_argument('--unop', help='unoptimised merging', action='store_true')
 
     parser.add_argument('--async', help='asynchronous communication', action='store_true')
@@ -55,11 +57,12 @@ def main(args: typing.List[str]) -> int:
     website_roles = parsed_args['website']
     asynchronous = parsed_args['async']
     unop = parsed_args['unop']
+    fn = parsed_args['fn']
 
-    return generate(batch, output_folder, protocol, scribble_file, website_roles, err_detect, unop, asynchronous)
+    return generate(batch, output_folder, protocol, scribble_file, website_roles, err_detect, unop, asynchronous, fn)
 
 
-def generate(batch, output_folder, protocol, scribble_file, website, err_detect, unop, asynchronous, counter=Counter(), line_counter=LineCounter()):
+def generate(batch, output_folder, protocol, scribble_file, website, err_detect, unop, asynchronous, fn, counter=Counter(), line_counter=LineCounter()):
     labels = set()
     channel_list = []
     efsms = {}
@@ -88,7 +91,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
 
     for role in all_roles:
         counter.set_role(role)
-        if not err_detect:
+        if not err_detect or fn:
             try:
                 message = f'Role {role} : Getting protocol from {scribble_file}'
                 with type_declaration_parser.parse(scribble_file) as custom_types:
@@ -106,6 +109,9 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
                 return 1
         else:
             output = FileReader(role, protocol).get_string()
+
+        print(output)
+
 
         phase = f'Role {role} : Parse endpoint IR from Scribble output'
         try:

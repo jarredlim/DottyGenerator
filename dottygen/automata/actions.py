@@ -16,6 +16,7 @@ class Action(ABC):
     payloads: typing.List[str]
     succ: State = field(init=False, compare=False)
 
+    _ERR_MSG_TWO_REGEX: typing.ClassVar[str] = '(?P<role>.+)(?P<bla>[?])(?P<op>[#])\(\)'
     _ACTION_LABEL_REGEX: typing.ClassVar[str] = '(?P<role>.+)(?P<op>[!?])(?P<label>.+)\((?P<payloads>.*)\)'
     _ERR_MESSAGE_REGEX: typing.ClassVar[str] = '(?P<role>.+)(?P<op>[#])'
     _action_token_to_constructor: typing.ClassVar[typing.Dict[str, typing.Type['Action']]] = {}
@@ -32,21 +33,29 @@ class Action(ABC):
     def parse(cls, action_label: str, src_state_id: str, dst_state_id: str) -> 'Action':
         """Parse the action specified by 'action_label' (in Scribble notation) into an
         Action instance, transitioning from 'src_state_id' to 'dst_state_id'."""
-        
+
+        matcher_error_2 = re.match(cls._ERR_MSG_TWO_REGEX, action_label)
         matcher = re.match(cls._ACTION_LABEL_REGEX, action_label)
         matcher_error = re.match(cls._ERR_MESSAGE_REGEX, action_label)
-        if not matcher and not matcher_error:
+        if not matcher and not matcher_error and not matcher_error_2:
             raise ValueError(f'Invalid action: "{action_label}"')
-    
-        components = matcher.groupdict() if matcher else matcher_error.groupdict()
+
+
+        if matcher_error_2:
+          components = matcher_error_2.groupdict()
+        elif matcher_error:
+            components = matcher_error.groupdict()
+        else:
+            components = matcher.groupdict()
+
         Constructor = Action._action_token_to_constructor.get(components['op'])
         if not Constructor:
             raise ValueError(f'Unsupported operation: "{components["op"]}"')
 
         payloads = [payload.strip() for payload in components['payloads'].split(',')
-                    if payload.strip()] if matcher else []
+                    if payload.strip()] if matcher and not matcher_error_2 else []
 
-        labels = components['label'] if matcher else []
+        labels = components['label'] if matcher and not matcher_error_2 else []
         
         return Constructor(role=components['role'],
                            label=labels,
