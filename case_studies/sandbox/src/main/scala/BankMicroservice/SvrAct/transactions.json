@@ -17,9 +17,8 @@
     },
     {
       "username" : "Carol",
-      "balance" : 100,
+      "balance" : 200,
       "transactions" : [
-        "Withdraw,100,2021-05-25T12:14:20.429394"
       ]
     }
   ]

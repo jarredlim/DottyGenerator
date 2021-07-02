@@ -110,9 +110,6 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
         else:
             output = FileReader(role, protocol).get_string()
 
-        print(output)
-
-
         phase = f'Role {role} : Parse endpoint IR from Scribble output'
         try:
             start_time = time.time()
