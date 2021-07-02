@@ -1,8 +1,7 @@
 # Multiparty Session Types in Scala/Dotty 
-A mono-repo for a session type API code generation toolchain for modern web programming.
+A mono-repo for a Effpi + session type API code generation toolchain for Scala program.
 
 > This project was originally built for the author's
-> [undergraduate Master's thesis](https://www.imperial.ac.uk/media/imperial-college/faculty-of-engineering/computing/public/1920-ug-projects/Miu,-Anson-(kcm116).pdf)
 > at Imperial College London.
 
 1. [Getting started](#getting-started)
@@ -15,10 +14,6 @@ A mono-repo for a session type API code generation toolchain for modern web prog
     * [Using code generation toolchain](#usage)
     * [Running tests](#tests)
     * [Running case studies](#case-studies)
-    * [Running benchmarks](#run-benchmarks)
-    * [Visualising benchmarks](#visualise-benchmarks)
-
-1. [Other documentation](#other-docs)
 
 ---
 
@@ -31,8 +26,8 @@ properly installed. Other platforms supported by Docker may find a similar
 way to import the Docker image.
 
 ```bash
-$ git clone --recursive https://gitlab.doc.ic.ac.uk/jql17/effpi-type-generation.git
-$ cd effpi-type-generation
+$ git clone --recursive https://github.com/jarredlim/DottyGenerator.git
+$ cd DottyGenerator
 $ docker-compose run --service-ports dev
 ```
 
@@ -40,21 +35,20 @@ This command exposes the terminal of the _container_.
 To run the toolchain (e.g. show the helptext):
 
 ```bash
-dev@dev:~$ codegen --help
+dev@dev:~$ dottygen --help
 ```
 
 ### <a name="layout"></a> Repository Layout
 - `dottygen` contains the source code of our code generator, written in Python, which generates
-  Scala code for implementing the provided multiparty protocol.
+  Effpi-typed Scala code for implementing the provided multiparty protocol.
 - `protocols` contains various Scribble protocol descriptions, including those used in the case
   studies.
-- `case-studies` contains 3 case studies of implementing interactive web applications with our
-  toolchain, namely _Noughts and Crosses_, _Travel Agency_, and _Battleships_.
-- `perf-benchmarks`contains the code to generate performance benchmarks, including an iPython
-  notebook to visualise the benchmarks collected from an experiment run.
+- `case_studies` contains 2 case studies of implementing Session+Effpi-typed Scala applications with our
+  toolchain, namely _Two Buyers with Negotiation_ and _Bank with Microservices_.
+- `benchmarks`contains the code to generate performance benchmarks.
 - `scripts` contains various convenient scripts to run the toolchain and build the case studies.
 - `setup` contains scripts to set up the Docker container.
-- `web-sandbox` contains configuration files for the web development, e.g. TypeScript configurations
+- `effpi_sandbox` contains configuration files for the web development, e.g. TypeScript configurations
   and NPM `package.json` files.
 
 ## <a name="user-guide"></a> 2️⃣ User guide
