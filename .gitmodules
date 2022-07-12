@@ -1,6 +1,6 @@
 [submodule "nuscr"]
 	path = nuscr
-	url = git@github.com:nuscr/nuscr.git
+	url = https://github.com/nuscr/nuscr.git
 [submodule "effpi"]
 	path = effpi
 	url = https://github.com/jarredlim/effpi-error-detection.git
