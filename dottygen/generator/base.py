@@ -79,6 +79,8 @@ class Label():
         for i in range(len(self._payload)):
             if "number" in self._payload[i] or "Int" in self._payload[i]:
                 output += "-1"
+            elif "Double" in self._payload[i]:
+                output += "1.0"
             elif "string" in self._payload[i] or "String" in self._payload[i]:
                 output_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
                 output += f'"REPLACE_ME"'
