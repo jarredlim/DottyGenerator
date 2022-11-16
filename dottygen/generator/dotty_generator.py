@@ -62,7 +62,7 @@ class DottyGenerator:
             self._insert_channel(channel_list, [type], True)
 
         elif efsm.is_receive_state(state):
-            labels = [self._get_label(action) for action in actions]
+            labels = [self._get_label(action) for action in actions]#
             param_name = "x"
             if(len(actions) == 1):
                 continuation, channels = self._build_helper(actions[0].succ, visited)

@@ -9,9 +9,11 @@ from dottygen.utils import logger, scribble, type_declaration_parser, role_parse
 from dottygen.generator import DottyGenerator
 from dottygen.generator.merger import Merger
 from dottygen.generator.err_handle_merger import ErrorDetectMerger
-from dottygen.generator.channel_generator import CaseClassGenerator, ChannelGenerator
+from dottygen.generator.channel_generator import CaseClassGenerator, CaseClassPayloadGenerator, ChannelGenerator
 from dottygen.generator.file_writer import FileReader, RecurseTypeGenerator
 from dottygen.generator.output_generator import OutputGenerator
+
+from dottygen.automata.states import TerminalState
 
 def parse_arguments(args: typing.List[str]) -> typing.Dict:
     """Prepare command line argument parser and return the parsed arguments
@@ -64,6 +66,7 @@ def main(args: typing.List[str]) -> int:
 
 def generate(batch, output_folder, protocol, scribble_file, website, err_detect, unop, asynchronous, fn, counter=Counter(), line_counter=LineCounter()):
     labels = set()
+    payloadTys = set() # new types to define
     channel_list = []
     efsms = {}
     all_roles = role_parser.parse(scribble_file, protocol)
@@ -89,6 +92,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
 
     assert(not isWebsite or batch)
 
+    # -- Loads the automata from nuScr or otherwise
     for role in all_roles:
         counter.set_role(role)
         if not err_detect or fn:
@@ -123,6 +127,7 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
             logger.ERROR(error)
             return 1
 
+    ## -- Figures out the channels
     start_time = time.time()
     merger = Merger(efsms, unop)
     if err_detect:
@@ -130,6 +135,16 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
     channel_map = merger.merge()
     end_time = time.time()
     counter.add_merge_time(end_time-start_time)
+
+    ## -- Figures out custom payload types
+    scalaStdTypes = ['Boolean', 'Byte', 'Short', 'Int', 'Long', 'Float', 'Double', 'Char', 'String']
+    for k in efsms:
+        fmsk = efsms[k]
+        for s in fmsk.states:
+            if not isinstance(s, TerminalState):
+                for a in s.actions:
+                    xs = set(filter (lambda x: x not in scalaStdTypes, a.payloads))
+                    payloadTys = payloadTys.union(xs)
 
     for role in all_roles:
         counter.set_role(role)
@@ -159,7 +174,8 @@ def generate(batch, output_folder, protocol, scribble_file, website, err_detect,
         # print(counter.get_nuscr_time())
         #print(counter.get_merge_time() + counter.get_class_time() + counter.get_efsm_time() + counter.get_type_time() + counter.get_function_time() + counter.get_nuscr_time())
         line_counter.add_case_class(labels)
-        case_classes = CaseClassGenerator(labels).generate()
+        case_classes = CaseClassPayloadGenerator(payloadTys).generate()
+        case_classes += CaseClassGenerator(labels).generate()
         channels_assign = ChannelGenerator(channel_list, channel_map, asynchronous or err_detect).generate()
         if not batch:
             output_generator.single_output(output_folder, case_classes, channels_assign, protocol)

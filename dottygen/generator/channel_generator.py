@@ -13,6 +13,18 @@ class CaseClassGenerator():
         case_class += "\n"
         return case_class
 
+class CaseClassPayloadGenerator():
+
+    def __init__(self, names):
+        self._names = names
+
+    def generate(self):
+        case_class = ""
+        for name in self._names:
+            case_class += f"case class {name}()\n"
+        case_class += "\n"
+        return case_class
+
 class ChannelGenerator():
 
     def __init__(self, channel_list, channel_map, asynchronous=False):
