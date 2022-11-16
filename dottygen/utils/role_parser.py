@@ -16,7 +16,7 @@ def parse(filename: str, protocol: str) -> typing.Set[str]:
     roles = matcher.groupdict()['roles']
     unparsed_roles = [role.strip() for role in roles.split(',')]
     
-    parsed_roles = set(role.split(' ')[1].strip()
+    parsed_roles = set(role.split(' ')[-1].strip()
                        for role in unparsed_roles)
 
     return parsed_roles
