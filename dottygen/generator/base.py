@@ -86,6 +86,8 @@ class Label():
                 output += f'"REPLACE_ME"'
             elif "date" in self._payload[i] or "Date" in self._payload[i]:
                 output += f'new Date()'
+            else:
+                output += f'new {self._payload[i]}()'
             if i != len(self._payload) - 1:
                 output += ","
         output += ")"
